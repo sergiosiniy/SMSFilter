@@ -1,0 +1,12 @@
+<resources>
+    <!-- Application name -->
+    <string name="app_name">SMS Filter</string>
+
+    <!-- App textviews -->
+    <string name="add_word_textview">Add word to the filter:</string>
+
+    <!-- App buttons -->
+    <string name="add_word_button">Add</string>
+    <string name="delete_word_button">Delete</string>
+
+</resources>
