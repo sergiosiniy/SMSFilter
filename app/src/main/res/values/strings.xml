@@ -4,6 +4,8 @@
 
     <!-- App textviews -->
     <string name="add_word_textview">Add word to the filter:</string>
+    <string name="add_word_hint">(e.g. taxi)</string>
+    <string name="filtered_words_list_textview">Filtered words:</string>
 
     <!-- App buttons -->
     <string name="add_word_button">Add</string>

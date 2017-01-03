@@ -4,10 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by helpdeskss on 03.01.2017.
- */
-
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "filter_db";
@@ -19,19 +15,20 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        dbCreatorUpdator(sqLiteDatabase, 0, DB_VERSION);
+        dbCreatorUpdater(sqLiteDatabase, 0, DB_VERSION);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        dbCreatorUpdater(sqLiteDatabase,oldVersion, newVersion);
     }
 
-    private void dbCreatorUpdator(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion){
-        if(oldVersion<1){
+    private void dbCreatorUpdater(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion){
+        if(oldVersion<newVersion){
             sqLiteDatabase.execSQL("CREATE TABLE WORDS (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    +"WORD TEXT, "
-                    +"DESCRIPTION TEXT");
+                    +"WORD TEXT, ");
+            sqLiteDatabase.execSQL("CREATE TABLE EXCEPTIONS (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    +", NAME TEXT, PHONE_NUMBER TEXT");
         }
     }
 }

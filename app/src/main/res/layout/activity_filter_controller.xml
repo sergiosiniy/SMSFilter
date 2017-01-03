@@ -5,7 +5,7 @@
     android:id="@+id/activity_filter_controller"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ua.kiev.sergiosiniy.smsfilter.activities.FilterController">
+    tools:context="ua.kiev.sergiosiniy.smsfilter.activities.FilterWords">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,6 +22,11 @@
         <EditText
             android:layout_width="0dp"
             android:layout_weight="4"
+            android:hint="@string/add_word_hint"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:maxLength="30"
+            android:inputType="text"
             android:layout_height="wrap_content" />
 
 
@@ -51,16 +56,30 @@
 
     </LinearLayout>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp">
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:orientation="vertical">
 
-        </ListView>
-    </ScrollView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/filtered_words_list_textview"
+            android:textSize="18sp"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp">
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </ListView>
+        </ScrollView>
+
+    </LinearLayout>
 
 
 

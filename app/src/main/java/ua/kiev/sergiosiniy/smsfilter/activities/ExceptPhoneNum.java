@@ -2,16 +2,14 @@ package ua.kiev.sergiosiniy.smsfilter.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import ua.kiev.sergiosiniy.smsfilter.R;
 
-public class FilterController extends AppCompatActivity {
+public class ExceptPhoneNum extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_controller);
-
+        setContentView(R.layout.activity_excepted_phone_numbers);
     }
 }

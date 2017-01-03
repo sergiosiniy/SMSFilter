@@ -1,4 +1,4 @@
-package ua.kiev.sergiosiniy.smsfilter.activities;
+package ua.kiev.sergiosiniy.smsfilter.utils;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,7 +14,6 @@ public class SMSFilter extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String senderPhoneNumber;
         String message;
-        String checkWord="taxi";
 
         String messageString="plain/text";
         if(intent != null && intent.getAction() != null &&
