@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ua.kiev.sergiosiniy.smsfilter">
-
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
 
@@ -11,13 +10,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver
             android:name=".utils.SMSFilter"
             android:permission="android.permission.BROADCAST_SMS">
@@ -25,9 +25,9 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-        <activity android:name=".activities.FilterWords"/>
+
+        <activity android:name=".activities.FilteredWords"/>
         <activity android:name=".activities.ExceptPhoneNum" />
         <activity android:name=".activities.Quarantined" />
-
     </application>
 </manifest>

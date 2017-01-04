@@ -29,6 +29,8 @@ public class DBHelper extends SQLiteOpenHelper {
                     +"WORD TEXT, ");
             sqLiteDatabase.execSQL("CREATE TABLE EXCEPTIONS (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
                     +", NAME TEXT, PHONE_NUMBER TEXT");
+            sqLiteDatabase.execSQL("CREATE TABLE QUARANTINED (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    +"PHONE_NUMBER TEXT, MESSAGE TEXT");
         }
     }
 }
