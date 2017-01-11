@@ -16,7 +16,6 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_start_service);
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
             fab.setElevation(4);
-            fab.setAnimation();
         }
     }
 }
