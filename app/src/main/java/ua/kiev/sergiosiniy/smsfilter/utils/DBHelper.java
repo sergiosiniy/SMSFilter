@@ -9,7 +9,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "filter_db";
     private static final int DB_VERSION = 1;
 
-    DBHelper(Context context){
+    public DBHelper(Context context){
         super(context, DB_NAME, null, DB_VERSION);
     }
 
@@ -25,12 +25,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private void dbCreatorUpdater(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion){
         if(oldVersion<newVersion){
-            sqLiteDatabase.execSQL("CREATE TABLE WORDS (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    +"WORD TEXT, ");
-            sqLiteDatabase.execSQL("CREATE TABLE EXCEPTIONS (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    +", NAME TEXT, PHONE_NUMBER TEXT");
-            sqLiteDatabase.execSQL("CREATE TABLE QUARANTINED (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    +"PHONE_NUMBER TEXT, MESSAGE TEXT");
+            // Contains the words to filter a message if it contains one or more of them
+            sqLiteDatabase.execSQL("CREATE TABLE FILTERED_WORDS "+
+                    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, WORD TEXT");
+            // Contains numbers which was not added to contacts, but messages from are not a spam
+            sqLiteDatabase.execSQL("CREATE TABLE EXCEPTIONS "+
+                    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PHONE_NUMBER TEXT");
+            /*Contains messages which contains the word matches to some from FILTER_WORDS table
+            and number was never seen before. User can decide to add this number to
+            exceptions(whitelist) or to phone contacts or do nothing to say it's spam.
+            */
+            sqLiteDatabase.execSQL("CREATE TABLE QUARANTINED "+
+                    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, PHONE_NUMBER TEXT, MESSAGE TEXT");
         }
     }
 }

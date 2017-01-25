@@ -10,5 +10,8 @@
     <!-- App buttons -->
     <string name="add_word_button">Add</string>
     <string name="delete_word_button">Delete</string>
+    <string name="exceptions_button">Exceptions</string>
+    <string name="filtered_words_button">Filtered Words</string>
+    <string name="quarantined_messages_button">Quarantined</string>
 
 </resources>
