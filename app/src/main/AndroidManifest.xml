@@ -18,6 +18,15 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".services.SMSFilterService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name=".services.SMSFilterService"/>
+            </intent-filter>
+
+        </service>
+
         <!--<receiver
             android:name=".utils.SMSReceiver"
             android:exported="true">

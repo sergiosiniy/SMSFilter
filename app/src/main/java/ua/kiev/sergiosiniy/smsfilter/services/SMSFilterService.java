@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -14,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import android.widget.Toast;
 
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 
@@ -23,18 +23,27 @@ import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
  */
 
 public class SMSFilterService extends IntentService {
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public SMSFilterService(String name) {
-        super(name);
+
+    private SMSReceiver messageReceiver;
+    private IntentFilter mIntentFilter;
+
+    public SMSFilterService() {
+        super("SMSFilterService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        messageReceiver = new SMSReceiver();
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(messageReceiver, mIntentFilter);
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        unregisterReceiver(messageReceiver);
     }
 
     private class SMSReceiver extends BroadcastReceiver {
