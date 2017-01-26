@@ -169,10 +169,12 @@ public class SMSFilterService extends IntentService {
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             ContentResolver contentResolver = getContentResolver();
-          //  Cursor contactsCursor = contentResolver.query(ContactsContract.Contacts.)
+            //Cursor contactsCursor = contentResolver.query(ContactsContract.Contacts.)
             ContentValues newContact = new ContentValues();
 
+            //TODO on change/add contact in the phone book update/add this contact to the exceptions table
         }
-
     }
+     /*TODO create private class which gets all contacts from the phone book ant puts it to
+              TODO the exceptions table when app runs at the first time*/
 }
