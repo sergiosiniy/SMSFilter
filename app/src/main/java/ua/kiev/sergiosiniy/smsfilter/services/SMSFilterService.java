@@ -2,10 +2,12 @@ package ua.kiev.sergiosiniy.smsfilter.services;
 
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -13,22 +15,31 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 
 /**
- * Created by Admin on 25.01.2017.
+ * Created by SergioSiniy on 25.01.2017.
  */
 
 public class SMSFilterService extends IntentService {
 
     private SMSReceiver messageReceiver;
     private IntentFilter mIntentFilter;
+    private SQLiteDatabase db;
+    private SQLiteOpenHelper dbHelper;
 
     public SMSFilterService() {
         super("SMSFilterService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
     }
 
     @Override
@@ -49,8 +60,7 @@ public class SMSFilterService extends IntentService {
     private class SMSReceiver extends BroadcastReceiver {
 
         private final String TAG = this.getClass().getSimpleName();
-        private SQLiteDatabase db;
-        SQLiteOpenHelper dbHelper;
+
 
         @SuppressWarnings("deprecation")
         @Override
@@ -148,5 +158,21 @@ public class SMSFilterService extends IntentService {
                 }
             }
         }
+    }
+    private class ContactsObserver extends ContentObserver {
+
+        public ContactsObserver() {
+            super(null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+            ContentResolver contentResolver = getContentResolver();
+          //  Cursor contactsCursor = contentResolver.query(ContactsContract.Contacts.)
+            ContentValues newContact = new ContentValues();
+
+        }
+
     }
 }
