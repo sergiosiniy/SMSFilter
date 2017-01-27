@@ -84,11 +84,13 @@ public class SMSFilterService extends IntentService {
     */
     private class SMSReceiver extends BroadcastReceiver {
 
+        // Tag with a current class name for android logging
         private final String TAG = this.getClass().getSimpleName();
 
         @SuppressWarnings("deprecation")
         @Override
         public void onReceive(Context context, Intent intent) {
+
             final Bundle smsBundle = intent.getExtras();
             String stringMessageSource;
             String stringMessageBody;
@@ -97,6 +99,7 @@ public class SMSFilterService extends IntentService {
             dbHelper = new DBHelper(SMSFilterService.this);
             db = dbHelper.getReadableDatabase();
 
+            // Here I'm trying to get the message's body and originating address.
             try {
                 if (smsBundle != null) {
                     final Object[] pduObjects = (Object[]) smsBundle.get("pdus");
@@ -111,8 +114,10 @@ public class SMSFilterService extends IntentService {
 
                         stringMessageSource = currentMessage.getDisplayOriginatingAddress();
                         stringMessageBody = currentMessage.getDisplayMessageBody();
+                        // When I'm done I push it's phone number and text to the log.
                         Log.i(TAG, "Received message from" + stringMessageSource + ":" +
                                 stringMessageBody);
+                        // And begin the process of checking of the message for filtered words.
                         new FilteredWordsCheck().execute(stringMessageSource, stringMessageBody);
 
                     }
@@ -129,22 +134,31 @@ public class SMSFilterService extends IntentService {
 
             @Override
             protected Boolean doInBackground(String... message) {
-
+                // This value will allow the message to pass to the SMS Inbox
                 boolean isPassed = true;
 
                 try {
+                    // Get all the filtered words from DB
                     Cursor filteredWordsCursor = db.query("FILTERED_WORDS",
                             new String[]{"WORD"},
                             null, null, null, null, null);
-                    Cursor exceptedNumbersCursor = db.query("EXCEPTIONS",
-                            new String[]{"NAME", "PHONE_NUMBER"},
+                    // Get all the phones from DB
+                    Cursor exceptedNumbersCursor = db.query("PHONES",
+                            new String[]{"PHONE_NUMBER"},
                             null, null, null, null, null);
-
+                    // Check if there any number in DB. If not - fill DB up!
                     if (exceptedNumbersCursor.getCount() == 0) {
-
+                        /* This thing should fill exceptions and phone tables in my SQLite
+                           from user's phone contacts. But I don't know if it does =(
+                        */
                         ExceptionsPhoneFiller phoneFiller = new ExceptionsPhoneFiller();
                         phoneFiller.fillTheExceptionsTable(getApplicationContext());
+                        // Try to get any phones from DB. Again.
+                        exceptedNumbersCursor = db.query("PHONES",
+                                new String[]{"PHONE_NUMBER"},
+                                null, null, null, null, null);
                     }
+
 
                     while (filteredWordsCursor.moveToNext()) {
                         if (message[1].toLowerCase().contains(" " +

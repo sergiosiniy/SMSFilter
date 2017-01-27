@@ -11,36 +11,40 @@ import android.provider.ContactsContract;
 
 public class ExceptionsPhoneFiller {
 
-    String phoneNumber = null;
-    String id = null;
-    String name = null;
-
     public void fillTheExceptionsTable(Context context) {
+        String name = null;
+        String phoneNumber = null;
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor contactPhones = contentResolver.query(ContactsContract
+
+        //get all contacts from phone book
+        Cursor contactsCursor = contentResolver.query(ContactsContract
                 .Contacts.CONTENT_URI, null, null, null, null);
 
-        if (contactPhones!= null) {
+        if (contactsCursor!= null) {
 
-            while (contactPhones.moveToNext()) {
-                id = contactPhones.getString(contactPhones.getColumnIndex(ContactsContract.Contacts._ID));
+            while (contactsCursor.moveToNext()) {
 
-                name = contactPhones.getString(contactPhones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                name = contactsCursor.getString(contactsCursor.getColumnIndex(ContactsContract
+                        .Contacts.DISPLAY_NAME));
 
-                if (Integer.parseInt(contactPhones.getString(contactPhones.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    Cursor phonesCur = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
+                if (Integer.parseInt(contactsCursor.getString(contactsCursor
+                        .getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+                    Cursor phonesCursor = contentResolver.query(ContactsContract.CommonDataKinds
+                            .Phone.CONTENT_URI, null,
+                            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " = ?",
+                            new String[]{name}, null);
 
-                    while (phonesCur.moveToNext()) {
-                        phoneNumber = phonesCur.getString(phonesCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-
+                    while (phonesCursor.moveToNext()) {
+                        phoneNumber = phonesCursor.getString(phonesCursor
+                                .getColumnIndex(ContactsContract.CommonDataKinds
+                                        .Phone.NORMALIZED_NUMBER));
                     }
-                    phonesCur.close();
+
+                    phonesCursor.close();
                 }
             }
 
+            contactsCursor.close();
         }
-        contactPhones.close();
     }
 }
