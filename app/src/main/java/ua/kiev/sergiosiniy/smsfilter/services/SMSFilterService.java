@@ -42,15 +42,12 @@ public class SMSFilterService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        /*
-            Creates object of contacts observer, which keeps a look and adds/deletes phones in the
-            exceptions and phones tables when user changes his contact's info
-         */
+
+        //Creates object of contacts observer
         contactsObserver = new ContactsObserver();
         contentResolver = getContentResolver();
-        /*
-            Creates object of SMSReceiver class
-         */
+
+        //Creates object of SMSReceiver class
         messageReceiver = new SMSReceiver();
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
@@ -75,13 +72,13 @@ public class SMSFilterService extends IntentService {
         super.onDestroy();
     }
 
-    /*
-       SMSReceiver class, which waiting for SMS receiving and provides
-       check if the message contains filtered words. If it contains a filtered word - the
-       receiver will check if the originating number stored in the phones table. If it is
-       the message passes to the SMS App, else message will be quarantined and user will see
-       the notification.
-    */
+    /**
+     * SMSReceiver class, which waiting for SMS receiving and provides
+     * check if the message contains filtered words. If it contains a filtered word - the
+     * receiver will check if the originating number stored in the phones table. If it is
+     * the message passes to the SMS App, else message will be quarantined and user will see
+     * the notification.
+     */
     private class SMSReceiver extends BroadcastReceiver {
 
         // Tag with a current class name for android logging
@@ -130,6 +127,10 @@ public class SMSFilterService extends IntentService {
             db.close();
         }
 
+        /**
+         * Provides check for filtered words and excepted phones. Makes decision weather SMS
+         * should be delivered or pushed to the quarantine.
+         */
         private class FilteredWordsCheck extends AsyncTask<String, Void, Boolean> {
 
             @Override
@@ -178,6 +179,7 @@ public class SMSFilterService extends IntentService {
                         } else {
                             Log.v(TAG, "No match with word " + filteredWordsCursor.getString(0)
                                     .toUpperCase() + " found.");
+
                         }
                     }
 
@@ -209,9 +211,9 @@ public class SMSFilterService extends IntentService {
         }
     }
 
-    /*
-        ContactsObserver class, which keeps a look and adds/deletes phones in the
-        exceptions and phones tables when user changes his contact's info.
+    /**
+     * ContactsObserver class, which keeps a look and adds/deletes phones in the
+     * exceptions and phones tables when user changes his contact's info.
      */
     private class ContactsObserver extends ContentObserver {
 
