@@ -30,7 +30,10 @@ public class DBHelper extends SQLiteOpenHelper {
                     "(_id INTEGER PRIMARY KEY AUTOINCREMENT, WORD TEXT");
             // Contains numbers which was not added to contacts, but messages from are not a spam
             sqLiteDatabase.execSQL("CREATE TABLE EXCEPTIONS " +
-                    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PHONE_NUMBER TEXT");
+                    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, PHONE_NUMBER_ID INTEGER, " +
+                    "FOREIGN KEY(PHONE_NUMBER_ID) REFERENCES PHONES(_id)");
+            sqLiteDatabase.execSQL("CREATE TABLE PHONES " +
+                    "(_id INTEGER PRIMARY KEY AUTOINCREMENT, PHONE_NUMBER TEXT");
             /*Contains messages which contains the word matches to some from FILTER_WORDS table
             and number was never seen before. User can decide to add this number to
             exceptions(whitelist) or to phone contacts or do nothing to say it's spam.

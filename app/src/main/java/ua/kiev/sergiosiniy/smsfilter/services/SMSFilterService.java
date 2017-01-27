@@ -20,6 +20,7 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
+import ua.kiev.sergiosiniy.smsfilter.utils.ExceptionsPhoneFiller;
 
 /**
  * Created by SergioSiniy on 25.01.2017.
@@ -31,6 +32,8 @@ public class SMSFilterService extends IntentService {
     private IntentFilter mIntentFilter;
     private SQLiteDatabase db;
     private SQLiteOpenHelper dbHelper;
+    private ContactsObserver contactsObserver;
+    private ContentResolver contentResolver;
 
     public SMSFilterService() {
         super("SMSFilterService");
@@ -39,28 +42,49 @@ public class SMSFilterService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-
-    }
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
+        /*
+            Creates object of contacts observer, which keeps a look and adds/deletes phones in the
+            exceptions and phones tables when user changes his contact's info
+         */
+        contactsObserver = new ContactsObserver();
+        contentResolver = getContentResolver();
+        /*
+            Creates object of SMSReceiver class
+         */
         messageReceiver = new SMSReceiver();
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        // Registering contacts observer
+        this.getApplicationContext().getContentResolver()
+                .registerContentObserver(ContactsContract.Contacts.CONTENT_URI,
+                        true, contactsObserver);
+        //Registering SMS Receiver
         registerReceiver(messageReceiver, mIntentFilter);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onHandleIntent(Intent intent) {
 
-        unregisterReceiver(messageReceiver);
     }
 
+
+    @Override
+    public void onDestroy() {
+        this.getApplicationContext().getContentResolver().unregisterContentObserver(contactsObserver);
+        unregisterReceiver(messageReceiver);
+        super.onDestroy();
+    }
+
+    /*
+       SMSReceiver class, which waiting for SMS receiving and provides
+       check if the message contains filtered words. If it contains a filtered word - the
+       receiver will check if the originating number stored in the phones table. If it is
+       the message passes to the SMS App, else message will be quarantined and user will see
+       the notification.
+    */
     private class SMSReceiver extends BroadcastReceiver {
 
         private final String TAG = this.getClass().getSimpleName();
-
 
         @SuppressWarnings("deprecation")
         @Override
@@ -87,9 +111,10 @@ public class SMSFilterService extends IntentService {
 
                         stringMessageSource = currentMessage.getDisplayOriginatingAddress();
                         stringMessageBody = currentMessage.getDisplayMessageBody();
-                        new FilteredWordsCheck().execute(stringMessageSource, stringMessageBody);
                         Log.i(TAG, "Received message from" + stringMessageSource + ":" +
                                 stringMessageBody);
+                        new FilteredWordsCheck().execute(stringMessageSource, stringMessageBody);
+
                     }
                 }
             } catch (NullPointerException e) {
@@ -114,10 +139,17 @@ public class SMSFilterService extends IntentService {
                     Cursor exceptedNumbersCursor = db.query("EXCEPTIONS",
                             new String[]{"NAME", "PHONE_NUMBER"},
                             null, null, null, null, null);
+
+                    if (exceptedNumbersCursor.getCount() == 0) {
+
+                        ExceptionsPhoneFiller phoneFiller = new ExceptionsPhoneFiller();
+                        phoneFiller.fillTheExceptionsTable(getApplicationContext());
+                    }
+
                     while (filteredWordsCursor.moveToNext()) {
                         if (message[1].toLowerCase().contains(" " +
-                                filteredWordsCursor.getString(1).toLowerCase() + " ")) {
-                            isPassed=false;
+                                filteredWordsCursor.getString(0).toLowerCase() + " ")) {
+                            isPassed = false;
                             Log.i(TAG, "Message from" + message[0] + ":" + message[1] +
                                     "CONTAINS FILTERED WORD!");
                             while (exceptedNumbersCursor.moveToNext()) {
@@ -129,6 +161,9 @@ public class SMSFilterService extends IntentService {
                                 }
                             }
                             break;
+                        } else {
+                            Log.v(TAG, "No match with word " + filteredWordsCursor.getString(0)
+                                    .toUpperCase() + " found.");
                         }
                     }
 
@@ -159,20 +194,27 @@ public class SMSFilterService extends IntentService {
             }
         }
     }
+
+    /*
+        ContactsObserver class, which keeps a look and adds/deletes phones in the
+        exceptions and phones tables when user changes his contact's info.
+     */
     private class ContactsObserver extends ContentObserver {
 
-        public ContactsObserver() {
+        ContactsObserver() {
             super(null);
         }
+
 
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             ContentResolver contentResolver = getContentResolver();
-            //Cursor contactsCursor = contentResolver.query(ContactsContract.Contacts.)
+            Cursor contactsCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                    null, null, null, null);
             ContentValues newContact = new ContentValues();
 
-            //TODO on change/add contact in the phone book update/add this contact to the exceptions table
+            //TODO on change/add of a contact in the phone book update/add this contact to the exceptions table
         }
     }
      /*TODO create private class which gets all contacts from the phone book ant puts it to
