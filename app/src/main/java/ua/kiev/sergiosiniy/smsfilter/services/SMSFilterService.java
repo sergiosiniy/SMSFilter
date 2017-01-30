@@ -7,7 +7,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -15,12 +14,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
-import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 import ua.kiev.sergiosiniy.smsfilter.utils.ContactPhonesCheck;
+import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 
 /**
  * Created by SergioSiniy on 25.01.2017.
@@ -32,7 +30,6 @@ public class SMSFilterService extends IntentService {
     private IntentFilter mIntentFilter;
     private SQLiteDatabase db;
     private SQLiteOpenHelper dbHelper;
-    private ContactsObserver contactsObserver;
     private ContentResolver contentResolver;
 
     public SMSFilterService() {
@@ -43,18 +40,12 @@ public class SMSFilterService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
-        //Creates object of contacts observer
-        contactsObserver = new ContactsObserver();
         contentResolver = getContentResolver();
 
         //Creates object of SMSReceiver class
         messageReceiver = new SMSReceiver();
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
-        // Registering contacts observer
-        this.getApplicationContext().getContentResolver()
-                .registerContentObserver(ContactsContract.Contacts.CONTENT_URI,
-                        true, contactsObserver);
         //Registering SMS Receiver
         registerReceiver(messageReceiver, mIntentFilter);
     }
@@ -67,7 +58,6 @@ public class SMSFilterService extends IntentService {
 
     @Override
     public void onDestroy() {
-        this.getApplicationContext().getContentResolver().unregisterContentObserver(contactsObserver);
         unregisterReceiver(messageReceiver);
         super.onDestroy();
     }
@@ -208,29 +198,4 @@ public class SMSFilterService extends IntentService {
             }
         }
     }
-
-    /**
-     * ContactsObserver class, which keeps a look and adds/deletes phones in the
-     * exceptions and phones tables when user changes his contact's info.
-     */
-    private class ContactsObserver extends ContentObserver {
-
-        ContactsObserver() {
-            super(null);
-        }
-
-
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-            ContentResolver contentResolver = getContentResolver();
-            Cursor contactsCursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
-                    null, null, null, null);
-            ContentValues newContact = new ContentValues();
-
-            //TODO on change/add of a contact in the phone book update/add this contact to the exceptions table
-        }
-    }
-     /*TODO create private class which gets all contacts from the phone book ant puts it to
-              TODO the exceptions table when app runs at the first time*/
 }
