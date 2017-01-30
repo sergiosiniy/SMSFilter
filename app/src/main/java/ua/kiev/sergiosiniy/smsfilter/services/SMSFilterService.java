@@ -20,7 +20,7 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
-import ua.kiev.sergiosiniy.smsfilter.utils.ExceptionsPhoneFiller;
+import ua.kiev.sergiosiniy.smsfilter.utils.ContactPhonesCheck;
 
 /**
  * Created by SergioSiniy on 25.01.2017.
@@ -135,6 +135,7 @@ public class SMSFilterService extends IntentService {
 
             @Override
             protected Boolean doInBackground(String... message) {
+
                 // This value will allow the message to pass to the SMS Inbox
                 boolean isPassed = true;
 
@@ -143,45 +144,43 @@ public class SMSFilterService extends IntentService {
                     Cursor filteredWordsCursor = db.query("FILTERED_WORDS",
                             new String[]{"WORD"},
                             null, null, null, null, null);
+
                     // Get all the phones from DB
                     Cursor exceptedNumbersCursor = db.query("PHONES",
                             new String[]{"PHONE_NUMBER"},
                             null, null, null, null, null);
-                    // Check if there any number in DB. If not - fill DB up!
-                    if (exceptedNumbersCursor.getCount() == 0) {
-                        /* This thing should fill exceptions and phone tables in my SQLite
-                           from user's phone contacts. But I don't know if it does =(
-                        */
-                        ExceptionsPhoneFiller phoneFiller = new ExceptionsPhoneFiller();
-                        phoneFiller.fillTheExceptionsTable(getApplicationContext());
-                        // Try to get any phones from DB. Again.
-                        exceptedNumbersCursor = db.query("PHONES",
-                                new String[]{"PHONE_NUMBER"},
-                                null, null, null, null, null);
-                    }
 
+                    if(filteredWordsCursor!=null) {
+                        while (filteredWordsCursor.moveToNext()) {
+                            if (message[1].toLowerCase().contains(" " +
+                                    filteredWordsCursor.getString(0).toLowerCase() + " ")) {
+                                isPassed = false;
+                                Log.i(TAG, "Message from" + message[0] + ":" + message[1] +
+                                        "CONTAINS FILTERED WORD!");
 
-                    while (filteredWordsCursor.moveToNext()) {
-                        if (message[1].toLowerCase().contains(" " +
-                                filteredWordsCursor.getString(0).toLowerCase() + " ")) {
-                            isPassed = false;
-                            Log.i(TAG, "Message from" + message[0] + ":" + message[1] +
-                                    "CONTAINS FILTERED WORD!");
-                            while (exceptedNumbersCursor.moveToNext()) {
-                                if (message[0].contains(exceptedNumbersCursor.getString(0))) {
-                                    isPassed = true;
-                                    Log.i(TAG, "Message from" + message[0] + ":" + message[1] +
-                                            "CONTAINS EXCEPTED PHONE!");
-                                    break;
+                                // Checks if the phone book contains phone number from a message
+                                ContactPhonesCheck contactPhonesCheck = new ContactPhonesCheck();
+                                isPassed = contactPhonesCheck.checkContacts(getApplicationContext(),
+                                        message[0]);
+
+                                if (exceptedNumbersCursor != null&&!isPassed) {
+                                    while (exceptedNumbersCursor.moveToNext()) {
+                                        if (exceptedNumbersCursor.getString(0).equals(message[0])) {
+                                            isPassed = true;
+                                            Log.i(TAG, "Message from" + message[0] + ":" + message[1] +
+                                                    "CONTAINS EXCEPTED PHONE!");
+                                            break;
+                                        }
+                                    }
+                                    exceptedNumbersCursor.close();
                                 }
                             }
-                            break;
-                        } else {
+                        }
+                    }else {
                             Log.v(TAG, "No match with word " + filteredWordsCursor.getString(0)
                                     .toUpperCase() + " found.");
 
                         }
-                    }
 
                     if (!isPassed) {
                         ContentValues quarantined = new ContentValues();
@@ -193,7 +192,6 @@ public class SMSFilterService extends IntentService {
                     }
 
                     filteredWordsCursor.close();
-                    exceptedNumbersCursor.close();
                 } catch (SQLiteException e) {
                     e.printStackTrace();
                     Log.e("SQLiteException", "No access to the DB");
