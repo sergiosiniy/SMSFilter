@@ -46,6 +46,7 @@ public class SMSFilterService extends IntentService {
         messageReceiver = new SMSReceiver();
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+
         //Registering SMS Receiver
         registerReceiver(messageReceiver, mIntentFilter);
     }
@@ -172,6 +173,7 @@ public class SMSFilterService extends IntentService {
 
                         }
 
+                    // If message not passed - put it to the quarantined table
                     if (!isPassed) {
                         ContentValues quarantined = new ContentValues();
                         quarantined.put("PHONE_NUMBER", message[0]);

@@ -2,10 +2,18 @@
     <!-- Application name -->
     <string name="app_name">SMS Filter</string>
 
+    <!-- Activities names-->
+    <string name="quarantined_messages">Quarantined</string>
+    <string name="filtered_words">Filtered</string>
+    <string name="excepted_phones">Exceptions</string>
+
     <!-- App textviews -->
     <string name="add_word_textview">Add word to the filter:</string>
     <string name="add_word_hint">(e.g. taxi)</string>
     <string name="filtered_words_list_textview">Filtered words:</string>
+    <string name="main_layout_last_message">Last filtered message:</string>
+    <string name="message_phone">Phone number:</string>
+    <string name="message_words">Contains words:</string>
 
     <!-- App buttons -->
     <string name="add_word_button">Add</string>
