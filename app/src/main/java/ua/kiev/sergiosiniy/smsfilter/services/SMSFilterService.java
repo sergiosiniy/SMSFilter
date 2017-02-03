@@ -25,6 +25,7 @@ import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
  */
 
 public class SMSFilterService extends IntentService {
+    public static boolean SERVICE_STATUS=false;
 
     private SMSReceiver messageReceiver;
     private IntentFilter mIntentFilter;

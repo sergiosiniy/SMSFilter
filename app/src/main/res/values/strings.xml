@@ -18,6 +18,16 @@
     <string name="exception_details_phone">Phone(s):</string>
     <string name="main_toolbar_text">SMS Filter</string>
 
+    <!-- Navigation view -->
+    <string name="navigation_item_home">Home</string>
+    <string name="navigation_item_filtered">Filtered words</string>
+    <string name="navigation_item_quarantined">Quarantined</string>
+    <string name="navigation_item_exceptions">Exceptions</string>
+    <string name="navigation_item_about">About</string>
+    <string name="navigation_header_service">Service:</string>
+    <string name="is_running">RUNNING</string>
+    <string name="is_down">DOWN</string>
+
     <!-- App buttons -->
     <string name="add_word_button">Add</string>
     <string name="delete_word_button">Delete</string>
@@ -27,5 +37,6 @@
 
     <!-- Descriptions -->
     <string name="navigation_icon_description">Navigation content</string>
+
 
 </resources>
