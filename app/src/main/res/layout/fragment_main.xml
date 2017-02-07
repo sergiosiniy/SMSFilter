@@ -55,11 +55,9 @@
 
 <android.support.design.widget.FloatingActionButton
 android:id="@+id/fab_start_service"
-style="@style/Widget.AppCompat.Light.ActionButton.Overflow"
+style="@style/FAB"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:layout_gravity="end|bottom"
-android:layout_margin="20dp"
-app:fabSize="auto" />
+ app:fabSize="auto"/>
 
 </FrameLayout>

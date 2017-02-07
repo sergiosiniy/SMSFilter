@@ -11,6 +11,7 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/quarantined_listitem_phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/ListItemText"/>
@@ -20,8 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        
+
         <TextView
+            android:id="@+id/quarantined_listitem_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/ListItemText"/>

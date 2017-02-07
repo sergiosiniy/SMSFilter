@@ -23,7 +23,10 @@ import ua.kiev.sergiosiniy.smsfilter.services.SMSFilterService;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
-    private Intent switchActivity;
+    private Bundle listType;
+    private RecyclerViewFragment recyclerViewFragment;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,21 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-   /* private void runSMSFilterService(){
-        serviceIntent = new Intent(this, SMSFilterService.class);
-        startService(serviceIntent);
-        SMSFilterService.SERVICE_STATUS=true;
-
-        Log.i(TAG,"is running");
-    }
-
-    private void stopSMSFilterService(){
-        stopService(serviceIntent);
-        SMSFilterService.SERVICE_STATUS=false;
-
-        Log.i(TAG,"is stoped");
-    }*/
-
     private void toolbarSetup(){
         Toolbar actionBarToolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
         setSupportActionBar(actionBarToolbar);
@@ -113,26 +101,33 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         switch(menuItem.getTitle().toString()){
                             case "Home":
+                                switchFragment(new HomeFragment());
                                 mDrawerLayout.closeDrawers();
                                 return true;
-                           /* case "Filtered words":
+                            case "Filtered words":
                                 mDrawerLayout.closeDrawers();
-                                switchActivity = new Intent(getApplicationContext(),
-                                        FilteredWords.class);
-                                startActivity(switchActivity);
+                                listType=new Bundle();
+                                listType.putString(RecyclerViewFragment.LIST_TYPE, menuItem.getTitle().toString());
+                                recyclerViewFragment = new RecyclerViewFragment();
+                                recyclerViewFragment.setArguments(listType);
+                                switchFragment(recyclerViewFragment);
                                 return true;
                             case "Quarantined":
                                 mDrawerLayout.closeDrawers();
-                                switchActivity = new Intent(getApplicationContext(),
-                                        Quarantined.class);
-                                startActivity(switchActivity);
+                                listType=new Bundle();
+                                listType.putString(RecyclerViewFragment.LIST_TYPE, menuItem.getTitle().toString());
+                                recyclerViewFragment = new RecyclerViewFragment();
+                                recyclerViewFragment.setArguments(listType);
+                                switchFragment(recyclerViewFragment);
                                 return true;
                             case "Exceptions":
                                 mDrawerLayout.closeDrawers();
-                                switchActivity = new Intent(getApplicationContext(),
-                                        ExceptPhoneNum.class);
-                                startActivity(switchActivity);
-                                return true;*/
+                                listType=new Bundle();
+                                listType.putString(RecyclerViewFragment.LIST_TYPE, menuItem.getTitle().toString());
+                                recyclerViewFragment = new RecyclerViewFragment();
+                                recyclerViewFragment.setArguments(listType);
+                                switchFragment(recyclerViewFragment);
+                                return true;
                         }
                         mDrawerLayout.closeDrawers();
                         return true;
