@@ -27,7 +27,24 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="200dp"
+            android:layout_margin="10dp"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/ContentTextViews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </ScrollView>
+        <TextView
+            style="@style/DescriptionTextViews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/message_words" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
             android:layout_margin="10dp"
             android:padding="5dp">
 
@@ -38,17 +55,14 @@
 
         </ScrollView>
 
+
         <TextView
             style="@style/DescriptionTextViews"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/message_phone" />
 
-        <TextView
-            style="@style/DescriptionTextViews"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/message_words" />
+
 
     </LinearLayout>
 

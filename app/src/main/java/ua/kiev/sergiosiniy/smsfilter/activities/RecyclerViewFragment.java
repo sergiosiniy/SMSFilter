@@ -16,9 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ua.kiev.sergiosiniy.smsfilter.R;
+import ua.kiev.sergiosiniy.smsfilter.entities.FilterException;
+import ua.kiev.sergiosiniy.smsfilter.entities.FilterExceptionName;
 import ua.kiev.sergiosiniy.smsfilter.entities.FilteredWord;
 import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
+import ua.kiev.sergiosiniy.smsfilter.utils.ExceptionsAdapter;
 import ua.kiev.sergiosiniy.smsfilter.utils.FilteredWordsAdapter;
 import ua.kiev.sergiosiniy.smsfilter.utils.QuarantinedAdapter;
 
@@ -79,6 +82,8 @@ public class RecyclerViewFragment extends Fragment {
                     break;
                 case "Exceptions":
                     setFab(getArguments().getString(LIST_TYPE), floatingActionButton);
+                    recyclerView.setAdapter(new ExceptionsAdapter(context,
+                            FilterExceptionName.getExceptionNamesList(new DBHelper(context))));
                     break;
                 default:
                     Log.i("RecyclerFragment", "nothing to show");

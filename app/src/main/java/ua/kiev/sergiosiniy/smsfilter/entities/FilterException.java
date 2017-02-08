@@ -57,7 +57,7 @@ public class FilterException {
     }
 
 
-    public static ArrayList<FilterException> getFilteredList(DBHelper helper){
+    public static ArrayList<FilterException> getExceptionsList(DBHelper helper){
         ArrayList<FilterException> messages = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor exceptCur = db.query(TABLE_NAME,null,null,null,null,null,null);

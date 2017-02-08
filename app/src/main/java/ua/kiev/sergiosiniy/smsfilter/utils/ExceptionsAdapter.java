@@ -10,6 +10,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import ua.kiev.sergiosiniy.smsfilter.R;
+import ua.kiev.sergiosiniy.smsfilter.entities.FilterException;
+import ua.kiev.sergiosiniy.smsfilter.entities.FilterExceptionName;
 import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 
 /**
@@ -18,12 +20,12 @@ import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 
 public class ExceptionsAdapter extends RecyclerView.Adapter<ExceptionsAdapter.ViewHolder> {
 
-    private List<Quarantined> quarantinedMessages;
+    private List<FilterExceptionName> exceptedPhonesNames;
     private Context mContext;
 
-    public ExceptionsAdapter(Context context, List<Quarantined> list){
-        this.quarantinedMessages=list;
-        this.mContext=context;
+    public ExceptionsAdapter(Context context, List<FilterExceptionName> names) {
+        this.exceptedPhonesNames = names;
+        this.mContext = context;
     }
 
     @Override
@@ -31,41 +33,41 @@ public class ExceptionsAdapter extends RecyclerView.Adapter<ExceptionsAdapter.Vi
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View quarantinedView = inflater.inflate(R.layout.quarantined_list_item_view, parent, false);
+        View quarantinedView = inflater.inflate(R.layout.exceptions_list_item_view, parent, false);
 
         return new ViewHolder(quarantinedView);
     }
 
     @Override
     public void onBindViewHolder(ExceptionsAdapter.ViewHolder holder, int position) {
-        Quarantined quarantined = quarantinedMessages.get(position);
+        FilterExceptionName exceptedNameData = exceptedPhonesNames.get(position);
 
-        TextView phone = holder.phone;
-        TextView message = holder.message;
+        TextView name = holder.exceptedName;
+        TextView date = holder.date;
 
-        phone.setText(quarantined.getPhoneNumber());
-        message.setText(quarantined.getMessageBody());
+        name.setText(exceptedNameData.getExceptedPhoneName());
+        date.setText(exceptedNameData.getDate());
     }
 
     @Override
     public int getItemCount() {
-        return quarantinedMessages.size();
+        return exceptedPhonesNames.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView phone;
-        public TextView message;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public TextView exceptedName;
+        public TextView date;
 
-        public ViewHolder(View itemView){
+        public ViewHolder(View itemView) {
             super(itemView);
 
-            phone = (TextView) itemView.findViewById(R.id.quarantined_listitem_phone);
-            message = (TextView) itemView.findViewById(R.id.quarantined_listitem_message);
+            exceptedName = (TextView) itemView.findViewById(R.id.excepted_list_name);
+            date = (TextView) itemView.findViewById(R.id.excepted_list_date);
         }
 
     }
 
-    private Context getContext(){
+    private Context getContext() {
         return mContext;
     }
 }

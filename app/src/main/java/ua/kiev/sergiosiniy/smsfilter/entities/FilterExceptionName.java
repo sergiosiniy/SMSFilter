@@ -17,17 +17,20 @@ public class FilterExceptionName {
     public final static String TABLE_NAME = "EXCEPTED_NAMES";
     public final static String ROW_ID = "_ID";
     public final static String EXCEPTION_NAME = "NAME";
+    public final static String EXCEPTION_NAME_ADD_DATE = "DATE";
 
 
     private int _id;
     private String exceptedPhoneName;
+    private String date;
 
 
 
 
-    public FilterExceptionName(int id, String name){
+    public FilterExceptionName(int id, String name, String date){
         this._id=id;
         this.exceptedPhoneName = name;
+        this.date=date;
     }
 
 
@@ -35,30 +38,39 @@ public class FilterExceptionName {
         return _id;
     }
 
-    public String getPhoneNumber() {
+    public String getExceptedPhoneName() {
         return exceptedPhoneName;
+    }
+
+    public String getDate(){
+        return this.date;
     }
 
     public void set_id(int _id) {
         this._id = _id;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.exceptedPhoneName = phoneNumber;
+    public void setExceptedPhoneName(String phoneName) {
+        this.exceptedPhoneName = phoneName;
+    }
+
+    public void setDate(String date){
+        this.date=date;
     }
 
 
-    public static ArrayList<FilterExceptionName> getFilteredList(DBHelper helper){
+    public static ArrayList<FilterExceptionName> getExceptionNamesList(DBHelper helper){
         ArrayList<FilterExceptionName> messages = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor exceptCur = db.query(TABLE_NAME,null,null,null,null,null,null);
 
 
         while(exceptCur.moveToNext()){
-            messages.add(new FilterExceptionName(exceptCur.getInt(0),exceptCur.getString(1)));
+            messages.add(new FilterExceptionName(exceptCur.getInt(0),exceptCur.getString(1),
+                    exceptCur.getString(2)));
         }
         if(messages.size()==0){
-            messages.add(new FilterExceptionName(1,"no items"));
+            messages.add(new FilterExceptionName(1,"no name",""));
         }
         exceptCur.close();
         db.close();
