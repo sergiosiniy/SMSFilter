@@ -98,31 +98,31 @@ public class MainActivity extends AppCompatActivity {
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        switch(menuItem.getTitle().toString()){
-                            case "Home":
+                        switch(menuItem.getItemId()){
+                            case R.id.navigation_home:
                                 switchFragment(new HomeFragment());
                                 mDrawerLayout.closeDrawers();
                                 return true;
-                            case "Filtered words":
+                            case R.id.navigation_filtered:
                                 mDrawerLayout.closeDrawers();
                                 listType=new Bundle();
-                                listType.putString(RecyclerViewFragment.LIST_TYPE, menuItem.getTitle().toString());
+                                listType.putInt(RecyclerViewFragment.LIST_TYPE, menuItem.getItemId());
                                 recyclerViewFragment = new RecyclerViewFragment();
                                 recyclerViewFragment.setArguments(listType);
                                 switchFragment(recyclerViewFragment);
                                 return true;
-                            case "Quarantined":
+                            case R.id.navigation_quarantined:
                                 mDrawerLayout.closeDrawers();
                                 listType=new Bundle();
-                                listType.putString(RecyclerViewFragment.LIST_TYPE, menuItem.getTitle().toString());
+                                listType.putInt(RecyclerViewFragment.LIST_TYPE, menuItem.getItemId());
                                 recyclerViewFragment = new RecyclerViewFragment();
                                 recyclerViewFragment.setArguments(listType);
                                 switchFragment(recyclerViewFragment);
                                 return true;
-                            case "Exceptions":
+                            case R.id.navigation_exceptions:
                                 mDrawerLayout.closeDrawers();
                                 listType=new Bundle();
-                                listType.putString(RecyclerViewFragment.LIST_TYPE, menuItem.getTitle().toString());
+                                listType.putInt(RecyclerViewFragment.LIST_TYPE, menuItem.getItemId());
                                 recyclerViewFragment = new RecyclerViewFragment();
                                 recyclerViewFragment.setArguments(listType);
                                 switchFragment(recyclerViewFragment);

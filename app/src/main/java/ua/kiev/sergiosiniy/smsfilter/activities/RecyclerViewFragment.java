@@ -77,21 +77,21 @@ public class RecyclerViewFragment extends Fragment {
         FloatingActionButton floatingActionButton =
                 (FloatingActionButton) view.findViewById(R.id.fab_recycler_view);
 
-        if (getArguments().getString(LIST_TYPE) != null) {
-            switch (getArguments().getString(LIST_TYPE)) {
-                case "Filtered words":
-                    new GetItemsCursor().execute("Filtered words");
-                    setFab(getArguments().getString(LIST_TYPE), floatingActionButton);
+        if (getArguments().getInt(LIST_TYPE) !=0) {
+            switch (getArguments().getInt(LIST_TYPE)) {
+                case R.id.navigation_filtered:
+                    new GetItemsCursor().execute(getArguments().getInt(LIST_TYPE));
+                    setFab(getArguments().getInt(LIST_TYPE), floatingActionButton);
 
                     break;
-                case "Quarantined":
-                    new GetItemsCursor().execute("Quarantined");
-                    setFab(getArguments().getString(LIST_TYPE), floatingActionButton);
+                case R.id.navigation_quarantined:
+                    new GetItemsCursor().execute(getArguments().getInt(LIST_TYPE));
+                    setFab(getArguments().getInt(LIST_TYPE), floatingActionButton);
 
                     break;
-                case "Exceptions":
-                    new GetItemsCursor().execute("Exceptions");
-                    setFab(getArguments().getString(LIST_TYPE), floatingActionButton);
+                case R.id.navigation_exceptions:
+                    new GetItemsCursor().execute(getArguments().getInt(LIST_TYPE));
+                    setFab(getArguments().getInt(LIST_TYPE), floatingActionButton);
                     break;
                 default:
                     Log.i("RecyclerFragment", "nothing to show");
@@ -101,9 +101,9 @@ public class RecyclerViewFragment extends Fragment {
 
     }
 
-    private void setFab(String param, FloatingActionButton fab) {
+    private void setFab(int param, FloatingActionButton fab) {
         switch (param) {
-            case "Filtered words":
+            case R.id.navigation_filtered:
                 fab.setVisibility(View.VISIBLE);
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -112,10 +112,10 @@ public class RecyclerViewFragment extends Fragment {
                     }
                 });
                 break;
-            case "Quarantined":
+            case R.id.navigation_quarantined:
                 fab.setVisibility(View.GONE);
                 break;
-            case "Exceptions":
+            case R.id.navigation_exceptions:
                 fab.setVisibility(View.VISIBLE);
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -134,19 +134,19 @@ public class RecyclerViewFragment extends Fragment {
         items.close();
     }
 
-    private class GetItemsCursor extends AsyncTask<String, Void, String> {
+    private class GetItemsCursor extends AsyncTask<Integer, Void, Integer> {
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Integer doInBackground(Integer... params) {
 
             switch (params[0]) {
-                case "Filtered words":
+                case R.id.navigation_filtered:
                     items = db.query(FilteredWord.TABLE_NAME, null, null, null, null, null, null);
                     break;
-                case "Quarantined":
+                case R.id.navigation_quarantined:
                     items = db.query(Quarantined.TABLE_NAME, null, null, null, null, null, null);
                     break;
-                case "Exceptions":
+                case R.id.navigation_exceptions:
                     items = db.query(FilterExceptionName.TABLE_NAME, null, null, null, null, null, null);
 
                     break;
@@ -156,18 +156,18 @@ public class RecyclerViewFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String params) {
+        protected void onPostExecute(Integer params) {
             switch (params) {
-                case "Filtered words":
+                case R.id.navigation_filtered:
                     recyclerView.setAdapter(new FilteredWordsAdapter(context,
                             items));
 
                     break;
-                case "Quarantined":
+                case R.id.navigation_quarantined:
                     recyclerView.setAdapter(new QuarantinedAdapter(context,
                             items));
                     break;
-                case "Exceptions":
+                case R.id.navigation_exceptions:
                     recyclerView.setAdapter(new ExceptionsAdapter(context,
                             items));
                     break;
