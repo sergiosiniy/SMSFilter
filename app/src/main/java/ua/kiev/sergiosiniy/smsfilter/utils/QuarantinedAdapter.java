@@ -1,6 +1,7 @@
 package ua.kiev.sergiosiniy.smsfilter.utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +19,10 @@ import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 
 public class QuarantinedAdapter extends RecyclerView.Adapter<QuarantinedAdapter.ViewHolder> {
 
-    private List<Quarantined> quarantinedMessages;
+    private Cursor quarantinedMessages;
     private Context mContext;
 
-    public QuarantinedAdapter(Context context, List<Quarantined> list){
+    public QuarantinedAdapter(Context context, Cursor list){
         this.quarantinedMessages=list;
         this.mContext=context;
     }
@@ -37,7 +38,9 @@ public class QuarantinedAdapter extends RecyclerView.Adapter<QuarantinedAdapter.
 
     @Override
     public void onBindViewHolder(QuarantinedAdapter.ViewHolder holder, int position) {
-        Quarantined quarantined = quarantinedMessages.get(position);
+        quarantinedMessages.moveToPosition(position);
+        Quarantined quarantined = new Quarantined(quarantinedMessages.getInt(0)
+                ,quarantinedMessages.getString(1),quarantinedMessages.getString(2));
 
         TextView phone = holder.phone;
         TextView message = holder.message;
@@ -48,7 +51,7 @@ public class QuarantinedAdapter extends RecyclerView.Adapter<QuarantinedAdapter.
 
     @Override
     public int getItemCount() {
-        return quarantinedMessages.size();
+        return quarantinedMessages.getCount();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{

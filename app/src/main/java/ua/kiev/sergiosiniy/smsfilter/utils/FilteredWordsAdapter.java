@@ -1,6 +1,7 @@
 package ua.kiev.sergiosiniy.smsfilter.utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +20,10 @@ import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 
 public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdapter.ViewHolder> {
 
-    private List<FilteredWord> filteredWords;
+    private Cursor filteredWords;
     private Context mContext;
 
-    public FilteredWordsAdapter(Context context, List<FilteredWord> list) {
+    public FilteredWordsAdapter(Context context, Cursor list) {
         this.filteredWords = list;
         this.mContext = context;
     }
@@ -38,7 +39,9 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
 
     @Override
     public void onBindViewHolder(FilteredWordsAdapter.ViewHolder holder, int position) {
-        FilteredWord filtered = filteredWords.get(position);
+        filteredWords.moveToPosition(position);
+        FilteredWord filtered = new FilteredWord(filteredWords.getInt(0),
+                filteredWords.getString(1));
 
         TextView word = holder.word;
 
@@ -47,7 +50,7 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
 
     @Override
     public int getItemCount() {
-        return filteredWords.size();
+        return filteredWords.getCount();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

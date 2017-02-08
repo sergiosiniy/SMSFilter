@@ -57,7 +57,7 @@ public class FilterException {
     }
 
 
-    public static ArrayList<FilterException> getExceptionsList(DBHelper helper){
+   /* public static ArrayList<FilterException> getExceptionsList(DBHelper helper){
         ArrayList<FilterException> messages = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor exceptCur = db.query(TABLE_NAME,null,null,null,null,null,null);
@@ -73,7 +73,7 @@ public class FilterException {
         exceptCur.close();
         db.close();
         return messages;
-    }
+    }*/
 
    /* @Nullable
     public static Quarantined getQuarantined(int id,DBHelper helper){
@@ -89,11 +89,4 @@ public class FilterException {
         return null;
     }*/
 
-    private class GetEntities extends AsyncTask<Void,Void,Void>{
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            return null;
-        }
-    }
 }

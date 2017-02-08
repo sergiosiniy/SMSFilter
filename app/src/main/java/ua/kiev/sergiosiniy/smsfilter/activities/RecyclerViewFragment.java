@@ -2,6 +2,10 @@ package ua.kiev.sergiosiniy.smsfilter.activities;
 
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -33,6 +37,7 @@ public class RecyclerViewFragment extends Fragment {
     private Context context;
     public static final String LIST_TYPE = "list";
     private RecyclerView recyclerView;
+    private Cursor items;
 
 
     public RecyclerViewFragment() {
@@ -71,19 +76,18 @@ public class RecyclerViewFragment extends Fragment {
         if (getArguments().getString(LIST_TYPE) != null) {
             switch (getArguments().getString(LIST_TYPE)) {
                 case "Filtered words":
+                    new GetItemsCursor().execute("Filtered words");
                     setFab(getArguments().getString(LIST_TYPE), floatingActionButton);
-                    recyclerView.setAdapter(new FilteredWordsAdapter(context,
-                            FilteredWord.getFilteredList(new DBHelper(context))));
+
                     break;
                 case "Quarantined":
+                    new GetItemsCursor().execute("Quarantined");
                     setFab(getArguments().getString(LIST_TYPE), floatingActionButton);
-                    recyclerView.setAdapter(new QuarantinedAdapter(context,
-                            Quarantined.getMessagesList(new DBHelper(context))));
+
                     break;
                 case "Exceptions":
+                    new GetItemsCursor().execute("Exceptions");
                     setFab(getArguments().getString(LIST_TYPE), floatingActionButton);
-                    recyclerView.setAdapter(new ExceptionsAdapter(context,
-                            FilterExceptionName.getExceptionNamesList(new DBHelper(context))));
                     break;
                 default:
                     Log.i("RecyclerFragment", "nothing to show");
@@ -116,6 +120,50 @@ public class RecyclerViewFragment extends Fragment {
                     }
                 });
                 break;
+        }
+    }
+
+    private class GetItemsCursor extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            SQLiteOpenHelper helper = new DBHelper(context);
+            SQLiteDatabase db = helper.getReadableDatabase();
+            switch (params[0]) {
+                case "Filtered words":
+                    items = db.query(FilteredWord.TABLE_NAME,null,null,null,null,null,null);
+                    break;
+                case "Quarantined":
+                    items = db.query(Quarantined.TABLE_NAME,null,null,null,null,null,null);
+                    break;
+                case "Exceptions":
+                    items = db.query(FilterExceptionName.TABLE_NAME,null,null,null,null,null,null);
+
+                    break;
+            }
+
+
+
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(String params) {
+            switch (params) {
+                case "Filtered words":
+                    recyclerView.setAdapter(new FilteredWordsAdapter(context,
+                            items));
+                    break;
+                case "Quarantined":
+                    recyclerView.setAdapter(new QuarantinedAdapter(context,
+                            items));
+                    break;
+                case "Exceptions":
+                    recyclerView.setAdapter(new ExceptionsAdapter(context,
+                            items));
+                    break;
+            }
+
         }
     }
 }

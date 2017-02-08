@@ -44,7 +44,7 @@ public class FilteredWord {
     }
 
 
-    public static ArrayList<FilteredWord> getFilteredList(DBHelper helper){
+   /* public static ArrayList<FilteredWord> getFilteredList(DBHelper helper){
         ArrayList<FilteredWord> messages = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor wordsCur = db.query(TABLE_NAME,null,null,null,null,null,null);
@@ -58,7 +58,7 @@ public class FilteredWord {
         wordsCur.close();
         db.close();
         return messages;
-    }
+    }*/
 
    /* @Nullable
     public static Quarantined getQuarantined(int id,DBHelper helper){
@@ -74,11 +74,4 @@ public class FilteredWord {
         return null;
     }*/
 
-    private class GetEntities extends AsyncTask<Void,Void,Void>{
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            return null;
-        }
-    }
 }

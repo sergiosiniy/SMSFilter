@@ -1,6 +1,7 @@
 package ua.kiev.sergiosiniy.smsfilter.utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +21,10 @@ import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 
 public class ExceptionsAdapter extends RecyclerView.Adapter<ExceptionsAdapter.ViewHolder> {
 
-    private List<FilterExceptionName> exceptedPhonesNames;
+    private Cursor exceptedPhonesNames;
     private Context mContext;
 
-    public ExceptionsAdapter(Context context, List<FilterExceptionName> names) {
+    public ExceptionsAdapter(Context context, Cursor names) {
         this.exceptedPhonesNames = names;
         this.mContext = context;
     }
@@ -40,18 +41,22 @@ public class ExceptionsAdapter extends RecyclerView.Adapter<ExceptionsAdapter.Vi
 
     @Override
     public void onBindViewHolder(ExceptionsAdapter.ViewHolder holder, int position) {
-        FilterExceptionName exceptedNameData = exceptedPhonesNames.get(position);
+        exceptedPhonesNames.moveToPosition(position);
+        FilterExceptionName exceptedNameData =
+                new FilterExceptionName(exceptedPhonesNames.getInt(0),
+                        exceptedPhonesNames.getString(1),exceptedPhonesNames.getString(2));
 
         TextView name = holder.exceptedName;
         TextView date = holder.date;
 
         name.setText(exceptedNameData.getExceptedPhoneName());
         date.setText(exceptedNameData.getDate());
+
     }
 
     @Override
     public int getItemCount() {
-        return exceptedPhonesNames.size();
+        return exceptedPhonesNames.getCount();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

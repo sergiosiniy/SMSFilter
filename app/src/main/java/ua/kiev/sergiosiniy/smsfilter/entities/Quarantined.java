@@ -2,6 +2,7 @@ package ua.kiev.sergiosiniy.smsfilter.entities;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Quarantined {
     private int _id;
     private String phoneNumber;
     private String messageBody;
+    public static ArrayList<Quarantined> messages;
 
     public Quarantined(int id, String phone, String message){
         this._id=id;
@@ -54,10 +56,11 @@ public class Quarantined {
         this.messageBody = messageBody;
     }
 
-    public static ArrayList<Quarantined> getMessagesList(DBHelper helper){
+   /* public static ArrayList<Quarantined> getMessagesList(DBHelper helper){
         ArrayList<Quarantined> messages = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor mesCur = db.query(TABLE_NAME,null,null,null,null,null,null);
+
 
         while(mesCur.moveToNext()){
             messages.add(new Quarantined(mesCur.getInt(0),mesCur.getString(1),mesCur.getString(2)));
@@ -68,7 +71,8 @@ public class Quarantined {
         mesCur.close();
         db.close();
         return messages;
-    }
+    }*/
+
 
    /* @Nullable
     public static Quarantined getQuarantined(int id,DBHelper helper){
@@ -83,11 +87,5 @@ public class Quarantined {
         db.close();
         return null;
     }*/
-   private class GetEntities extends AsyncTask<Void,Void,Void> {
 
-       @Override
-       protected Void doInBackground(Void... params) {
-           return null;
-       }
-   }
 }
