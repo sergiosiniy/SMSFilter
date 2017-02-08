@@ -9,7 +9,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "filter_db";
     private static final int DB_VERSION = 1;
 
-    public DBHelper(Context context){
+    public DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
@@ -20,11 +20,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        dbCreatorUpdater(sqLiteDatabase,oldVersion, newVersion);
+        dbCreatorUpdater(sqLiteDatabase, oldVersion, newVersion);
     }
 
-    private void dbCreatorUpdater(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion){
-        if(oldVersion<newVersion) {
+    private void dbCreatorUpdater(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        if (oldVersion < newVersion) {
             // Contains the words to filter a message if it contains one or more of them
             sqLiteDatabase.execSQL("CREATE TABLE FILTERED_WORDS " +
                     "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, WORD TEXT)");

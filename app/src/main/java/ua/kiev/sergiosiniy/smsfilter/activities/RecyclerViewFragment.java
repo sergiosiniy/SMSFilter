@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ua.kiev.sergiosiniy.smsfilter.R;
-import ua.kiev.sergiosiniy.smsfilter.entities.FilterException;
 import ua.kiev.sergiosiniy.smsfilter.entities.FilterExceptionName;
 import ua.kiev.sergiosiniy.smsfilter.entities.FilteredWord;
 import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
@@ -37,6 +36,8 @@ public class RecyclerViewFragment extends Fragment {
     private Context context;
     public static final String LIST_TYPE = "list";
     private RecyclerView recyclerView;
+    SQLiteOpenHelper helper;
+    SQLiteDatabase db;
     private Cursor items;
 
 
@@ -53,11 +54,14 @@ public class RecyclerViewFragment extends Fragment {
         } else {
             context = getContext();
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        helper = new DBHelper(context);
+        db = helper.getReadableDatabase();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recycler_view, container, false);
     }
@@ -123,26 +127,30 @@ public class RecyclerViewFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        db.close();
+        items.close();
+    }
+
     private class GetItemsCursor extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-            SQLiteOpenHelper helper = new DBHelper(context);
-            SQLiteDatabase db = helper.getReadableDatabase();
+
             switch (params[0]) {
                 case "Filtered words":
-                    items = db.query(FilteredWord.TABLE_NAME,null,null,null,null,null,null);
+                    items = db.query(FilteredWord.TABLE_NAME, null, null, null, null, null, null);
                     break;
                 case "Quarantined":
-                    items = db.query(Quarantined.TABLE_NAME,null,null,null,null,null,null);
+                    items = db.query(Quarantined.TABLE_NAME, null, null, null, null, null, null);
                     break;
                 case "Exceptions":
-                    items = db.query(FilterExceptionName.TABLE_NAME,null,null,null,null,null,null);
+                    items = db.query(FilterExceptionName.TABLE_NAME, null, null, null, null, null, null);
 
                     break;
             }
-
-
 
             return params[0];
         }
@@ -153,6 +161,7 @@ public class RecyclerViewFragment extends Fragment {
                 case "Filtered words":
                     recyclerView.setAdapter(new FilteredWordsAdapter(context,
                             items));
+
                     break;
                 case "Quarantined":
                     recyclerView.setAdapter(new QuarantinedAdapter(context,
@@ -163,7 +172,6 @@ public class RecyclerViewFragment extends Fragment {
                             items));
                     break;
             }
-
         }
     }
 }

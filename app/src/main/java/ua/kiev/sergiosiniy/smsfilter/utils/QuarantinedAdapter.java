@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import ua.kiev.sergiosiniy.smsfilter.R;
 import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 
@@ -22,9 +20,9 @@ public class QuarantinedAdapter extends RecyclerView.Adapter<QuarantinedAdapter.
     private Cursor quarantinedMessages;
     private Context mContext;
 
-    public QuarantinedAdapter(Context context, Cursor list){
-        this.quarantinedMessages=list;
-        this.mContext=context;
+    public QuarantinedAdapter(Context context, Cursor list) {
+        this.quarantinedMessages = list;
+        this.mContext = context;
     }
 
     @Override
@@ -40,7 +38,7 @@ public class QuarantinedAdapter extends RecyclerView.Adapter<QuarantinedAdapter.
     public void onBindViewHolder(QuarantinedAdapter.ViewHolder holder, int position) {
         quarantinedMessages.moveToPosition(position);
         Quarantined quarantined = new Quarantined(quarantinedMessages.getInt(0)
-                ,quarantinedMessages.getString(1),quarantinedMessages.getString(2));
+                , quarantinedMessages.getString(1), quarantinedMessages.getString(2));
 
         TextView phone = holder.phone;
         TextView message = holder.message;
@@ -54,11 +52,11 @@ public class QuarantinedAdapter extends RecyclerView.Adapter<QuarantinedAdapter.
         return quarantinedMessages.getCount();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView phone;
         public TextView message;
 
-        public ViewHolder(View itemView){
+        public ViewHolder(View itemView) {
             super(itemView);
 
             phone = (TextView) itemView.findViewById(R.id.quarantined_listitem_phone);
@@ -67,7 +65,7 @@ public class QuarantinedAdapter extends RecyclerView.Adapter<QuarantinedAdapter.
 
     }
 
-    private Context getContext(){
+    private Context getContext() {
         return mContext;
     }
 }

@@ -17,8 +17,7 @@ import ua.kiev.sergiosiniy.smsfilter.services.SMSFilterService;
 public class HomeFragment extends Fragment {
     private final String TAG = "Service actions";
     private Intent serviceIntent;
-    private  Context context;
-
+    private Context context;
 
 
     public HomeFragment() {
@@ -26,15 +25,14 @@ public class HomeFragment extends Fragment {
     }
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(Build.VERSION.SDK_INT<23) {
+        if (Build.VERSION.SDK_INT < 23) {
             context = getActivity();
-        }else{
-            context=getContext();
+        } else {
+            context = getContext();
         }
 
     }
@@ -51,7 +49,7 @@ public class HomeFragment extends Fragment {
     public void onStart() {
         super.onStart();
         View view = getView();
-        if(view!=null) {
+        if (view != null) {
             FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_start_service);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -63,7 +61,7 @@ public class HomeFragment extends Fragment {
                     }
                 }
             });
-            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 fab.setElevation(4);
             }
         }
@@ -71,19 +69,19 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void runSMSFilterService(){
+    private void runSMSFilterService() {
 
         serviceIntent = new Intent(context, SMSFilterService.class);
         context.startService(serviceIntent);
-        SMSFilterService.SERVICE_STATUS=true;
+        SMSFilterService.SERVICE_STATUS = true;
 
-        Log.i(TAG,"is running");
+        Log.i(TAG, "is running");
     }
 
-    private void stopSMSFilterService(){
+    private void stopSMSFilterService() {
         context.stopService(serviceIntent);
-        SMSFilterService.SERVICE_STATUS=false;
+        SMSFilterService.SERVICE_STATUS = false;
 
-        Log.i(TAG,"is stoped");
+        Log.i(TAG, "is stoped");
     }
 }

@@ -25,7 +25,7 @@ import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
  */
 
 public class SMSFilterService extends IntentService {
-    public static boolean SERVICE_STATUS=false;
+    public static boolean SERVICE_STATUS = false;
 
     private SMSReceiver messageReceiver;
     private IntentFilter mIntentFilter;
@@ -142,7 +142,7 @@ public class SMSFilterService extends IntentService {
                             new String[]{"PHONE_NUMBER"},
                             null, null, null, null, null);
 
-                    if(filteredWordsCursor!=null) {
+                    if (filteredWordsCursor != null) {
                         while (filteredWordsCursor.moveToNext()) {
                             if (message[1].toLowerCase().contains(" " +
                                     filteredWordsCursor.getString(0).toLowerCase() + " ")) {
@@ -155,7 +155,7 @@ public class SMSFilterService extends IntentService {
                                 isPassed = contactPhonesCheck.checkContacts(getApplicationContext(),
                                         message[0]);
 
-                                if (exceptedNumbersCursor != null&&!isPassed) {
+                                if (exceptedNumbersCursor != null && !isPassed) {
                                     while (exceptedNumbersCursor.moveToNext()) {
                                         if (exceptedNumbersCursor.getString(0).equals(message[0])) {
                                             isPassed = true;
@@ -168,11 +168,11 @@ public class SMSFilterService extends IntentService {
                                 }
                             }
                         }
-                    }else {
-                            Log.v(TAG, "No match with word " + filteredWordsCursor.getString(0)
-                                    .toUpperCase() + " found.");
+                    } else {
+                        Log.v(TAG, "No match with word " + filteredWordsCursor.getString(0)
+                                .toUpperCase() + " found.");
 
-                        }
+                    }
 
                     // If message not passed - put it to the quarantined table
                     if (!isPassed) {

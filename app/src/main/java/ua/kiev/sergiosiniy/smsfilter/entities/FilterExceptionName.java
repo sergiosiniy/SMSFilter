@@ -1,13 +1,5 @@
 package ua.kiev.sergiosiniy.smsfilter.entities;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
-
-import java.util.ArrayList;
-
-import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
-
 /**
  * Created by SergioSiniy on 08.02.2017.
  */
@@ -25,12 +17,10 @@ public class FilterExceptionName {
     private String date;
 
 
-
-
-    public FilterExceptionName(int id, String name, String date){
-        this._id=id;
+    public FilterExceptionName(int id, String name, String date) {
+        this._id = id;
         this.exceptedPhoneName = name;
-        this.date=date;
+        this.date = date;
     }
 
 
@@ -42,7 +32,7 @@ public class FilterExceptionName {
         return exceptedPhoneName;
     }
 
-    public String getDate(){
+    public String getDate() {
         return this.date;
     }
 
@@ -54,42 +44,9 @@ public class FilterExceptionName {
         this.exceptedPhoneName = phoneName;
     }
 
-    public void setDate(String date){
-        this.date=date;
+    public void setDate(String date) {
+        this.date = date;
     }
-
-
-    /*public static ArrayList<FilterExceptionName> getExceptionNamesList(DBHelper helper){
-        ArrayList<FilterExceptionName> messages = new ArrayList<>();
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor exceptCur = db.query(TABLE_NAME,null,null,null,null,null,null);
-
-
-        while(exceptCur.moveToNext()){
-            messages.add(new FilterExceptionName(exceptCur.getInt(0),exceptCur.getString(1),
-                    exceptCur.getString(2)));
-        }
-        if(messages.size()==0){
-            messages.add(new FilterExceptionName(1,"no name",""));
-        }
-        exceptCur.close();
-        db.close();
-        return messages;
-    }*/
-
-   /* @Nullable
-    public static Quarantined getQuarantined(int id,DBHelper helper){
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor quarantineCur = db.query(TABLE_NAME,null,ROW_ID+"=?",
-                new String[]{Integer.toString(id)},null,null,null);
-        if(quarantineCur.moveToFirst()){
-            return new Quarantined(quarantineCur.getInt(0),quarantineCur.getString(1),
-                    quarantineCur.getString(2));
-        }
-        quarantineCur.close();
-        db.close();
-        return null;
-    }*/
 
 
 }

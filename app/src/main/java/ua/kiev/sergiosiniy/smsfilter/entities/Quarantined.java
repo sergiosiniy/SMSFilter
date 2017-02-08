@@ -1,13 +1,6 @@
 package ua.kiev.sergiosiniy.smsfilter.entities;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
-
 import java.util.ArrayList;
-
-import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 
 /**
  * Created by SergioSiniy on 06.02.2017.
@@ -25,10 +18,10 @@ public class Quarantined {
     private String messageBody;
     public static ArrayList<Quarantined> messages;
 
-    public Quarantined(int id, String phone, String message){
-        this._id=id;
-        this.phoneNumber=phone;
-        this.messageBody=message;
+    public Quarantined(int id, String phone, String message) {
+        this._id = id;
+        this.phoneNumber = phone;
+        this.messageBody = message;
     }
 
 
@@ -56,36 +49,5 @@ public class Quarantined {
         this.messageBody = messageBody;
     }
 
-   /* public static ArrayList<Quarantined> getMessagesList(DBHelper helper){
-        ArrayList<Quarantined> messages = new ArrayList<>();
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor mesCur = db.query(TABLE_NAME,null,null,null,null,null,null);
-
-
-        while(mesCur.moveToNext()){
-            messages.add(new Quarantined(mesCur.getInt(0),mesCur.getString(1),mesCur.getString(2)));
-        }
-        if(messages.size()==0){
-            messages.add(new Quarantined(1,"","no items"));
-        }
-        mesCur.close();
-        db.close();
-        return messages;
-    }*/
-
-
-   /* @Nullable
-    public static Quarantined getQuarantined(int id,DBHelper helper){
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor quarantineCur = db.query(TABLE_NAME,null,ROW_ID+"=?",
-                new String[]{Integer.toString(id)},null,null,null);
-        if(quarantineCur.moveToFirst()){
-            return new Quarantined(quarantineCur.getInt(0),quarantineCur.getString(1),
-                    quarantineCur.getString(2));
-        }
-        quarantineCur.close();
-        db.close();
-        return null;
-    }*/
 
 }

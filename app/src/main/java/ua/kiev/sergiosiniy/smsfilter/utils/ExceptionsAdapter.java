@@ -8,12 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import ua.kiev.sergiosiniy.smsfilter.R;
-import ua.kiev.sergiosiniy.smsfilter.entities.FilterException;
 import ua.kiev.sergiosiniy.smsfilter.entities.FilterExceptionName;
-import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 
 /**
  * Created by SergioSiniy on 08.02.2017.
@@ -44,7 +40,7 @@ public class ExceptionsAdapter extends RecyclerView.Adapter<ExceptionsAdapter.Vi
         exceptedPhonesNames.moveToPosition(position);
         FilterExceptionName exceptedNameData =
                 new FilterExceptionName(exceptedPhonesNames.getInt(0),
-                        exceptedPhonesNames.getString(1),exceptedPhonesNames.getString(2));
+                        exceptedPhonesNames.getString(1), exceptedPhonesNames.getString(2));
 
         TextView name = holder.exceptedName;
         TextView date = holder.date;

@@ -1,13 +1,5 @@
 package ua.kiev.sergiosiniy.smsfilter.entities;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
-
-import java.util.ArrayList;
-
-import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
-
 /**
  * Created by SergioSiniy on 08.02.2017.
  */
@@ -24,11 +16,10 @@ public class FilterException {
     private int nameId;
 
 
-
-    public FilterException(int id, String word, int name){
-        this._id=id;
-        this.exceptedPhone =word;
-        this.nameId=name;
+    public FilterException(int id, String word, int name) {
+        this._id = id;
+        this.exceptedPhone = word;
+        this.nameId = name;
     }
 
 
@@ -55,38 +46,5 @@ public class FilterException {
     public void setNameId(int name) {
         this.nameId = name;
     }
-
-
-   /* public static ArrayList<FilterException> getExceptionsList(DBHelper helper){
-        ArrayList<FilterException> messages = new ArrayList<>();
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor exceptCur = db.query(TABLE_NAME,null,null,null,null,null,null);
-
-
-        while(exceptCur.moveToNext()){
-            messages.add(new FilterException(exceptCur.getInt(0),exceptCur.getString(1),
-                    exceptCur.getInt(2)));
-        }
-        if(messages.size()==0){
-            messages.add(new FilterException(1,"no items",1));
-        }
-        exceptCur.close();
-        db.close();
-        return messages;
-    }*/
-
-   /* @Nullable
-    public static Quarantined getQuarantined(int id,DBHelper helper){
-        SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor quarantineCur = db.query(TABLE_NAME,null,ROW_ID+"=?",
-                new String[]{Integer.toString(id)},null,null,null);
-        if(quarantineCur.moveToFirst()){
-            return new Quarantined(quarantineCur.getInt(0),quarantineCur.getString(1),
-                    quarantineCur.getString(2));
-        }
-        quarantineCur.close();
-        db.close();
-        return null;
-    }*/
 
 }

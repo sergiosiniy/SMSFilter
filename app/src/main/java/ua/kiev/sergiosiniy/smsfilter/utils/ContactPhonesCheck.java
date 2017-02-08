@@ -1,7 +1,6 @@
 package ua.kiev.sergiosiniy.smsfilter.utils;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -15,7 +14,7 @@ public class ContactPhonesCheck {
     public boolean checkContacts(Context context, String originsPhoneNumber) {
         String name;
         String phoneNumber;
-        boolean passed=false;
+        boolean passed = false;
         ContentResolver contentResolver = context.getContentResolver();
 
         //get all contacts from phone book
@@ -44,8 +43,8 @@ public class ContactPhonesCheck {
                                     .getColumnIndex(ContactsContract.CommonDataKinds
                                             .Phone.NORMALIZED_NUMBER));
                             //if phone book contains such number break loop and return true
-                            if(phoneNumber.equals(originsPhoneNumber)){
-                                passed=true;
+                            if (phoneNumber.equals(originsPhoneNumber)) {
+                                passed = true;
                                 break externalLoop;
                             }
                         }
