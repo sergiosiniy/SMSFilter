@@ -13,30 +13,31 @@ import ua.kiev.sergiosiniy.smsfilter.R;
 import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
 
 /**
- * Created by SergioSiniy on 07.02.2017.
+ * Created by SergioSiniy on 08.02.2017.
  */
 
-public class QuarantinedAdapter extends RecyclerView.Adapter<QuarantinedAdapter.ViewHolder> {
+public class ExceptionsAdapter extends RecyclerView.Adapter<ExceptionsAdapter.ViewHolder> {
 
     private List<Quarantined> quarantinedMessages;
     private Context mContext;
 
-    public QuarantinedAdapter(Context context, List<Quarantined> list){
+    public ExceptionsAdapter(Context context, List<Quarantined> list){
         this.quarantinedMessages=list;
         this.mContext=context;
     }
 
     @Override
-    public QuarantinedAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ExceptionsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
+
         View quarantinedView = inflater.inflate(R.layout.quarantined_list_item_view, parent, false);
 
         return new ViewHolder(quarantinedView);
     }
 
     @Override
-    public void onBindViewHolder(QuarantinedAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ExceptionsAdapter.ViewHolder holder, int position) {
         Quarantined quarantined = quarantinedMessages.get(position);
 
         TextView phone = holder.phone;

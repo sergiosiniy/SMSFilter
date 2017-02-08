@@ -30,10 +30,10 @@ public class DBHelper extends SQLiteOpenHelper {
                     "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, WORD TEXT)");
             /* Contains names of contacts and excepted numbers which was not added to contacts,
              which messages from are not a spam */
-            sqLiteDatabase.execSQL("CREATE TABLE EXCEPTIONS " +
+            sqLiteDatabase.execSQL("CREATE TABLE EXCEPTED_NAMES " +
                     "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT)");
             // All the phone numbers for filter exceptions
-            sqLiteDatabase.execSQL("CREATE TABLE PHONES " +
+            sqLiteDatabase.execSQL("CREATE TABLE EXCEPTED_PHONES " +
                     "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, PHONE_NUMBER TEXT, NAME_ID INTEGER," +
                     "FOREIGN KEY(NAME_ID) REFERENCES EXCEPTIONS(_id))");
             /*Contains messages which contains the word matches to some from FILTER_WORDS table

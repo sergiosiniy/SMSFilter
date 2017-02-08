@@ -9,24 +9,25 @@ import java.util.ArrayList;
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 
 /**
- * Created by SergioSiniy on 06.02.2017.
+ * Created by SergioSiniy on 08.02.2017.
  */
 
-public class Quarantined {
+public class FilterExceptionName {
 
-    public final static String TABLE_NAME = "QUARANTINED";
+    public final static String TABLE_NAME = "EXCEPTED_NAMES";
     public final static String ROW_ID = "_ID";
-    public final static String PHONE_NUMBER = "PHONE_NUMBER";
-    public final static String MESSAGE = "MESSAGE";
+    public final static String EXCEPTION_NAME = "NAME";
+
 
     private int _id;
-    private String phoneNumber;
-    private String messageBody;
+    private String exceptedPhoneName;
 
-    public Quarantined(int id, String phone, String message){
+
+
+
+    public FilterExceptionName(int id, String name){
         this._id=id;
-        this.phoneNumber=phone;
-        this.messageBody=message;
+        this.exceptedPhoneName = name;
     }
 
 
@@ -35,11 +36,7 @@ public class Quarantined {
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getMessageBody() {
-        return messageBody;
+        return exceptedPhoneName;
     }
 
     public void set_id(int _id) {
@@ -47,25 +44,23 @@ public class Quarantined {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        this.exceptedPhoneName = phoneNumber;
     }
 
-    public void setMessageBody(String messageBody) {
-        this.messageBody = messageBody;
-    }
 
-    public static ArrayList<Quarantined> getMessagesList(DBHelper helper){
-        ArrayList<Quarantined> messages = new ArrayList<>();
+    public static ArrayList<FilterExceptionName> getFilteredList(DBHelper helper){
+        ArrayList<FilterExceptionName> messages = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor mesCur = db.query(TABLE_NAME,null,null,null,null,null,null);
+        Cursor exceptCur = db.query(TABLE_NAME,null,null,null,null,null,null);
 
-        while(mesCur.moveToNext()){
-            messages.add(new Quarantined(mesCur.getInt(0),mesCur.getString(1),mesCur.getString(2)));
+
+        while(exceptCur.moveToNext()){
+            messages.add(new FilterExceptionName(exceptCur.getInt(0),exceptCur.getString(1)));
         }
         if(messages.size()==0){
-            messages.add(new Quarantined(1,"","no items"));
+            messages.add(new FilterExceptionName(1,"no items"));
         }
-        mesCur.close();
+        exceptCur.close();
         db.close();
         return messages;
     }
@@ -83,11 +78,12 @@ public class Quarantined {
         db.close();
         return null;
     }*/
-   private class GetEntities extends AsyncTask<Void,Void,Void> {
 
-       @Override
-       protected Void doInBackground(Void... params) {
-           return null;
-       }
-   }
+    private class GetEntities extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            return null;
+        }
+    }
 }

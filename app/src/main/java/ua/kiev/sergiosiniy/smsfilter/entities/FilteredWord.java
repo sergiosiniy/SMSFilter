@@ -9,24 +9,21 @@ import java.util.ArrayList;
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 
 /**
- * Created by SergioSiniy on 06.02.2017.
+ * Created by SergioSiniy on 08.02.2017.
  */
 
-public class Quarantined {
+public class FilteredWord {
 
-    public final static String TABLE_NAME = "QUARANTINED";
+    public final static String TABLE_NAME = "FILTERED_WORDS";
     public final static String ROW_ID = "_ID";
-    public final static String PHONE_NUMBER = "PHONE_NUMBER";
-    public final static String MESSAGE = "MESSAGE";
+    public final static String WORD = "WORD";
 
     private int _id;
-    private String phoneNumber;
-    private String messageBody;
+    private String filteredWord;
 
-    public Quarantined(int id, String phone, String message){
+    public FilteredWord(int id, String word){
         this._id=id;
-        this.phoneNumber=phone;
-        this.messageBody=message;
+        this.filteredWord=word;
     }
 
 
@@ -35,11 +32,7 @@ public class Quarantined {
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getMessageBody() {
-        return messageBody;
+        return filteredWord;
     }
 
     public void set_id(int _id) {
@@ -47,25 +40,22 @@ public class Quarantined {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        this.filteredWord = phoneNumber;
     }
 
-    public void setMessageBody(String messageBody) {
-        this.messageBody = messageBody;
-    }
 
-    public static ArrayList<Quarantined> getMessagesList(DBHelper helper){
-        ArrayList<Quarantined> messages = new ArrayList<>();
+    public static ArrayList<FilteredWord> getFilteredList(DBHelper helper){
+        ArrayList<FilteredWord> messages = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor mesCur = db.query(TABLE_NAME,null,null,null,null,null,null);
+        Cursor wordsCur = db.query(TABLE_NAME,null,null,null,null,null,null);
 
-        while(mesCur.moveToNext()){
-            messages.add(new Quarantined(mesCur.getInt(0),mesCur.getString(1),mesCur.getString(2)));
+        while(wordsCur.moveToNext()){
+            messages.add(new FilteredWord(wordsCur.getInt(0),wordsCur.getString(1)));
         }
         if(messages.size()==0){
-            messages.add(new Quarantined(1,"","no items"));
+            messages.add(new FilteredWord(1,"no items"));
         }
-        mesCur.close();
+        wordsCur.close();
         db.close();
         return messages;
     }
@@ -83,11 +73,12 @@ public class Quarantined {
         db.close();
         return null;
     }*/
-   private class GetEntities extends AsyncTask<Void,Void,Void> {
 
-       @Override
-       protected Void doInBackground(Void... params) {
-           return null;
-       }
-   }
+    private class GetEntities extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            return null;
+        }
+    }
 }
