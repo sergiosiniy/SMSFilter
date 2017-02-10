@@ -41,8 +41,15 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
                 filteredWords.getString(1));
 
         TextView word = holder.word;
-
         word.setText(filtered.getPhoneNumber());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
     }
 
     @Override
@@ -55,7 +62,6 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
 
         public ViewHolder(View itemView) {
             super(itemView);
-
             word = (TextView) itemView.findViewById(R.id.filtered_word);
 
         }

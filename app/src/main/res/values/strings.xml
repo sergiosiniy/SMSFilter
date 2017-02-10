@@ -9,7 +9,7 @@
 
     <!-- App textviews -->
     <string name="add_word_textview">Add word to the filter:</string>
-    <string name="add_word_hint">(e.g. taxi)</string>
+    <string name="add_word_hint">Input a word(e.g. taxi)</string>
     <string name="filtered_words_list_textview">Filtered words:</string>
     <string name="main_layout_last_message">Last filtered message:</string>
     <string name="message_phone">Phone number:</string>
@@ -38,8 +38,14 @@
     <!-- Descriptions -->
     <string name="navigation_icon_description">Navigation content</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <!-- Dialogs -->
+    <string name="dialog_add_word_to_filter">Add new word</string>
+    <string name="positive_button_dialog_add_word">ADD WORD</string>
+    <string name="negative_button_dialog_add_word">Cancel</string>
+    <string name="toast_empty_string_dialog_add_word">Input a word first!</string>
+    <string name="dialog_delete_word_from_filter">Delete word?</string>
+    <string name="positive_button_dialog_delete_word">YES</string>
+    <string name="negative_button_dialog_delete_word">No</string>
+    <string name="toast_delete_word_dialog">Deleted word: </string>
 
 </resources>

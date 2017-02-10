@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.navigation_filtered:
                                 mDrawerLayout.closeDrawers();
                                 listType=new Bundle();
-                                listType.putInt(RecyclerViewFragment.LIST_TYPE, menuItem.getItemId());
+                                listType.putInt(RecyclerViewFragment.ITEM_ID, menuItem.getItemId());
                                 recyclerViewFragment = new RecyclerViewFragment();
                                 recyclerViewFragment.setArguments(listType);
                                 switchFragment(recyclerViewFragment);
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.navigation_quarantined:
                                 mDrawerLayout.closeDrawers();
                                 listType=new Bundle();
-                                listType.putInt(RecyclerViewFragment.LIST_TYPE, menuItem.getItemId());
+                                listType.putInt(RecyclerViewFragment.ITEM_ID, menuItem.getItemId());
                                 recyclerViewFragment = new RecyclerViewFragment();
                                 recyclerViewFragment.setArguments(listType);
                                 switchFragment(recyclerViewFragment);
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.navigation_exceptions:
                                 mDrawerLayout.closeDrawers();
                                 listType=new Bundle();
-                                listType.putInt(RecyclerViewFragment.LIST_TYPE, menuItem.getItemId());
+                                listType.putInt(RecyclerViewFragment.ITEM_ID, menuItem.getItemId());
                                 recyclerViewFragment = new RecyclerViewFragment();
                                 recyclerViewFragment.setArguments(listType);
                                 switchFragment(recyclerViewFragment);

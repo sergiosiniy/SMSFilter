@@ -46,9 +46,15 @@
         <item name="android:textAppearance">?attr/textAppearanceListItem</item>
     </style>
 
+    <style name="FilteredListItemText">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Large</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="FAB" parent="Widget.AppCompat.Light.ActionButton.Overflow">
         <item name="android:layout_gravity">end|bottom</item>
         <item name="android:layout_margin">20dp</item>
     </style>
+
 
 </resources>
