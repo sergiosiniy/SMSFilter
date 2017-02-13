@@ -6,10 +6,6 @@ package ua.kiev.sergiosiniy.smsfilter.entities;
 
 public class FilteredWord {
 
-    public final static String TABLE_NAME = "FILTERED_WORDS";
-    public final static String ROW_ID = "_ID";
-    public final static String WORD = "WORD";
-
     private int _id;
     private String filteredWord;
 
@@ -23,7 +19,7 @@ public class FilteredWord {
         return _id;
     }
 
-    public String getPhoneNumber() {
+    public String getFilteredWord() {
         return filteredWord;
     }
 
@@ -31,7 +27,7 @@ public class FilteredWord {
         this._id = _id;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setFilteredWord(String phoneNumber) {
         this.filteredWord = phoneNumber;
     }
 

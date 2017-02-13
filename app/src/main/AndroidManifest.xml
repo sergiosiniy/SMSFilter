@@ -30,12 +30,11 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".activities.FilteredWords"
-            android:label="@string/filtered_words"/>
-        <activity android:name=".activities.ExceptPhoneNum"
-            android:label="@string/excepted_phones"/>
-        <activity android:name=".activities.Quarantined"
-            android:label="@string/quarantined_messages"/>
+        <provider
+            android:authorities="ua.kiev.sergiosiniy.smsfilter.utils.DBContentProvider"
+            android:name=".utils.DBContentProvider"
+            android:exported="false"/>
+
         <activity android:name=".activities.QuarantinedMessageDetails"
             android:label="@string/quarantined_messages"/>
         <activity android:name=".activities.ExceptPhoneNumDetails"

@@ -4,6 +4,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import ua.kiev.sergiosiniy.smsfilter.tables.ExceptionNamesTable;
+import ua.kiev.sergiosiniy.smsfilter.tables.ExceptionsTable;
+import ua.kiev.sergiosiniy.smsfilter.tables.FilteredWordsTable;
+import ua.kiev.sergiosiniy.smsfilter.tables.QuarantinedTable;
+
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "filter_db";
@@ -15,33 +20,28 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        dbCreatorUpdater(sqLiteDatabase, 0, DB_VERSION);
-    }
+        // Contains the words to filter a message if it contains one or more of them
+        FilteredWordsTable.onCreate(sqLiteDatabase);
 
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        dbCreatorUpdater(sqLiteDatabase, oldVersion, newVersion);
-    }
-
-    private void dbCreatorUpdater(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        if (oldVersion < newVersion) {
-            // Contains the words to filter a message if it contains one or more of them
-            sqLiteDatabase.execSQL("CREATE TABLE FILTERED_WORDS " +
-                    "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, WORD TEXT)");
             /* Contains names of contacts and excepted numbers which was not added to contacts,
              which messages from are not a spam */
-            sqLiteDatabase.execSQL("CREATE TABLE EXCEPTED_NAMES " +
-                    "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, DATE TEXT)");
-            // All the phone numbers for filter exceptions
-            sqLiteDatabase.execSQL("CREATE TABLE EXCEPTED_PHONES " +
-                    "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, PHONE_NUMBER TEXT, NAME_ID INTEGER," +
-                    "FOREIGN KEY(NAME_ID) REFERENCES EXCEPTIONS(_id))");
+        ExceptionNamesTable.onCreate(sqLiteDatabase);
+
+        // A phone numbers for filter exceptions, not from contacts
+        ExceptionsTable.onCreate(sqLiteDatabase);
+
             /*Contains messages which contains the word matches to some from FILTER_WORDS table
             and number was never seen before. User can decide to add this number to
             exceptions(whitelist) or to phone contacts or do nothing to say it's spam.
             */
-            sqLiteDatabase.execSQL("CREATE TABLE QUARANTINED " +
-                    "(_ID INTEGER PRIMARY KEY AUTOINCREMENT, PHONE_NUMBER TEXT, MESSAGE TEXT)");
-        }
+        QuarantinedTable.onCreate(sqLiteDatabase);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        FilteredWordsTable.onUpgrade(sqLiteDatabase,oldVersion,newVersion);
+        ExceptionNamesTable.onUpgrade(sqLiteDatabase,oldVersion,newVersion);
+        ExceptionsTable.onUpgrade(sqLiteDatabase,oldVersion,newVersion);
+        QuarantinedTable.onUpgrade(sqLiteDatabase,oldVersion,newVersion);
     }
 }

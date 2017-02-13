@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,17 +23,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import ua.kiev.sergiosiniy.smsfilter.R;
-import ua.kiev.sergiosiniy.smsfilter.entities.FilterExceptionName;
-import ua.kiev.sergiosiniy.smsfilter.entities.FilteredWord;
-import ua.kiev.sergiosiniy.smsfilter.entities.Quarantined;
+import ua.kiev.sergiosiniy.smsfilter.tables.ExceptionNamesTable;
+import ua.kiev.sergiosiniy.smsfilter.tables.FilteredWordsTable;
+import ua.kiev.sergiosiniy.smsfilter.tables.QuarantinedTable;
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 import ua.kiev.sergiosiniy.smsfilter.utils.ExceptionsAdapter;
 import ua.kiev.sergiosiniy.smsfilter.utils.FilteredWordsAdapter;
-import ua.kiev.sergiosiniy.smsfilter.utils.ItemClickSupport;
 import ua.kiev.sergiosiniy.smsfilter.utils.QuarantinedAdapter;
 
 /**
@@ -51,7 +50,6 @@ public class RecyclerViewFragment extends Fragment {
     private RecyclerView.Adapter adapter;
 
 
-
     public RecyclerViewFragment() {
         // Required empty public constructor
     }
@@ -60,12 +58,11 @@ public class RecyclerViewFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT < 23) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             context = getActivity();
         } else {
             context = getContext();
         }
-
     }
 
     @Override
@@ -85,50 +82,27 @@ public class RecyclerViewFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        FloatingActionButton floatingActionButton =
-                (FloatingActionButton) view.findViewById(R.id.fab_recycler_view);
 
         if (getArguments().getInt(ITEM_ID) != 0) {
+            FloatingActionButton floatingActionButton =
+                    (FloatingActionButton) view.findViewById(R.id.fab_recycler_view);
+
             switch (getArguments().getInt(ITEM_ID)) {
                 case R.id.navigation_filtered:
                     new GetItemsCursor().execute(getArguments().getInt(ITEM_ID));
                     setFab(getArguments().getInt(ITEM_ID), floatingActionButton);
-                    ItemClickSupport.addTo(recyclerView)
-                            .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-                                @Override
-                                public void onItemClicked(RecyclerView recyclerView, int position,
-                                                          View v) {
-                                    openDialog(v,position);
-                                }
-                            });
-
                     break;
+
                 case R.id.navigation_quarantined:
                     new GetItemsCursor().execute(getArguments().getInt(ITEM_ID));
                     setFab(getArguments().getInt(ITEM_ID), floatingActionButton);
-                    ItemClickSupport.addTo(recyclerView)
-                            .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-                                @Override
-                                public void onItemClicked(RecyclerView recyclerView, int position,
-                                                          View v) {
-
-                                }
-                            });
-
                     break;
+
                 case R.id.navigation_exceptions:
                     new GetItemsCursor().execute(getArguments().getInt(ITEM_ID));
                     setFab(getArguments().getInt(ITEM_ID), floatingActionButton);
-                    ItemClickSupport.addTo(recyclerView)
-                            .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-                                @Override
-                                public void onItemClicked(RecyclerView recyclerView, int position,
-                                                          View v) {
-
-                                }
-                            });
-
                     break;
+
                 default:
                     Log.i("RecyclerFragment", "nothing to show");
 
@@ -140,7 +114,7 @@ public class RecyclerViewFragment extends Fragment {
     private void setFab(int param, FloatingActionButton fab) {
         switch (param) {
             case R.id.navigation_filtered:
-                fab.setVisibility(View.VISIBLE);
+
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -152,7 +126,7 @@ public class RecyclerViewFragment extends Fragment {
                 fab.setVisibility(View.GONE);
                 break;
             case R.id.navigation_exceptions:
-                fab.setVisibility(View.VISIBLE);
+
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -163,40 +137,6 @@ public class RecyclerViewFragment extends Fragment {
         }
     }
 
-    private void openDialog(final View view, final int itemPosition) {
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-        final View inflateView = layoutInflater.inflate(R.layout.dialog_delete_word_view, null);
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context)
-                .setTitle(R.string.dialog_delete_word_from_filter)
-                .setView(inflateView);
-        TextView item = (TextView) view.findViewById(R.id.filtered_word);
-        final String wordToDelete = item.getText().toString();
-
-        TextView dialogTextView = (TextView) inflateView
-                .findViewById(R.id.textview_delete_word_dialog);
-        dialogTextView.setText(wordToDelete);
-
-        dialogBuilder.setPositiveButton(R.string.positive_button_dialog_delete_word,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        new RecyclerViewFragment.UpdateFilteredWords().execute(DELETE,
-                                wordToDelete,String.valueOf(itemPosition));
-                        Toast.makeText(context, getResources().getString(R.string.toast_delete_word_dialog) +
-                                wordToDelete, Toast.LENGTH_LONG).show();
-                    }
-                })
-                .setNegativeButton(R.string.negative_button_dialog_delete_word,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-        dialogBuilder.create();
-        dialogBuilder.show();
-    }
 
     private void openDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -213,7 +153,7 @@ public class RecyclerViewFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (!getWord.getText().toString().equals("")) {
-                            new RecyclerViewFragment.UpdateFilteredWords().execute(INSERT,
+                            new RecyclerViewFragment.UpdateFilteredWords().execute(
                                     getWord.getText().toString());
                         } else {
                             Toast.makeText(context, R.string.toast_empty_string_dialog_add_word,
@@ -235,9 +175,10 @@ public class RecyclerViewFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        db.close();
         items.close();
+        db.close();
     }
+
 
     private class GetItemsCursor extends AsyncTask<Integer, Void, Integer> {
 
@@ -247,14 +188,16 @@ public class RecyclerViewFragment extends Fragment {
 
             switch (params[0]) {
                 case R.id.navigation_filtered:
-                    items = db.query(FilteredWord.TABLE_NAME, null, null, null, null, null, null);
+                    items = db.query(FilteredWordsTable.TABLE_NAME, null, null, null, null, null,
+                            null);
                     break;
                 case R.id.navigation_quarantined:
-                    items = db.query(Quarantined.TABLE_NAME, null, null, null, null, null, null);
+                    items = db.query(QuarantinedTable.TABLE_NAME, null, null, null, null, null,
+                            null);
                     break;
                 case R.id.navigation_exceptions:
-                    items = db.query(FilterExceptionName.TABLE_NAME, null, null, null, null, null, null);
-
+                    items = db.query(ExceptionNamesTable.TABLE_NAME, null, null, null, null, null,
+                            null);
                     break;
             }
 
@@ -267,7 +210,6 @@ public class RecyclerViewFragment extends Fragment {
                 case R.id.navigation_filtered:
                     recyclerView.setAdapter(adapter = new FilteredWordsAdapter(context,
                             items));
-
                     break;
                 case R.id.navigation_quarantined:
                     recyclerView.setAdapter(adapter = new QuarantinedAdapter(context,
@@ -278,33 +220,38 @@ public class RecyclerViewFragment extends Fragment {
                             items));
                     break;
             }
-
         }
-
     }
 
     private class UpdateFilteredWords extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... params) {
-            db = helper.getWritableDatabase();
-            if (params[0].equals(INSERT)) {
-                ContentValues wordToFilter = new ContentValues();
-                wordToFilter.put(FilteredWord.WORD, params[1]);
 
-                db.insert(FilteredWord.TABLE_NAME, null, wordToFilter);
-                adapter.notifyItemInserted(adapter.getItemCount()+1);
+            try {
+                db = helper.getWritableDatabase();
+
+                ContentValues wordToFilter = new ContentValues();
+                wordToFilter.put(FilteredWordsTable.COLUMN_WORD, params[0]);
+
+                db.insert(FilteredWordsTable.TABLE_NAME, null, wordToFilter);
+                items.close();
+                items = db.query(FilteredWordsTable.TABLE_NAME, null, null, null, null, null, null);
+
+            } catch (SQLiteException e) {
+                e.printStackTrace();
+                Log.e("UpdateFilteredWords:", "Can't get access to the DB!");
             }
-            if (params[0].equals(DELETE)) {
-                db.delete(FilteredWord.TABLE_NAME, FilteredWord.WORD+"=\'"+params[1]+"\'", null);
-                adapter.notifyItemRemoved(Integer.parseInt(params[2]));
-            }
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-
+            FilteredWordsAdapter fwAdapter = (FilteredWordsAdapter) adapter;
+            fwAdapter.setCursor(items);
+            fwAdapter.notifyItemInserted(adapter.getItemCount());
+            fwAdapter.notifyItemRangeChanged(adapter.getItemCount(), adapter.getItemCount());
         }
     }
 }

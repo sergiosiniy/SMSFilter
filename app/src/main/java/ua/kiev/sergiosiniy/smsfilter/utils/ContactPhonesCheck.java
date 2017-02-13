@@ -12,12 +12,21 @@ import android.provider.ContactsContract;
 public class ContactPhonesCheck {
 
     public boolean checkContacts(Context context, String originsPhoneNumber) {
-        String name;
-        String phoneNumber;
+        //String name;
+        //String phoneNumber;
         boolean passed = false;
         ContentResolver contentResolver = context.getContentResolver();
 
-        //get all contacts from phone book
+
+        Cursor contactsCursor = contentResolver.query(ContactsContract
+                .Contacts.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.
+                NORMALIZED_NUMBER, new String[]{originsPhoneNumber},null);
+
+        if(contactsCursor!=null&contactsCursor.getCount()>0){
+
+            passed=true;
+
+       /* //get all contacts from phone book
         Cursor contactsCursor = contentResolver.query(ContactsContract
                 .Contacts.CONTENT_URI, null, null, null, null);
 
@@ -52,7 +61,7 @@ public class ContactPhonesCheck {
                         phonesCursor.close();
                     }
                 }
-            }
+            }*/
 
             contactsCursor.close();
         }

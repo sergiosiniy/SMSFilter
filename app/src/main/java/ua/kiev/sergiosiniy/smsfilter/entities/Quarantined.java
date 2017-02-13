@@ -8,11 +8,6 @@ import java.util.ArrayList;
 
 public class Quarantined {
 
-    public final static String TABLE_NAME = "QUARANTINED";
-    public final static String ROW_ID = "_ID";
-    public final static String PHONE_NUMBER = "PHONE_NUMBER";
-    public final static String MESSAGE = "MESSAGE";
-
     private int _id;
     private String phoneNumber;
     private String messageBody;
@@ -23,7 +18,6 @@ public class Quarantined {
         this.phoneNumber = phone;
         this.messageBody = message;
     }
-
 
     public int get_id() {
         return _id;

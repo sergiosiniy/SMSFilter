@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import ua.kiev.sergiosiniy.smsfilter.R;
 import ua.kiev.sergiosiniy.smsfilter.entities.FilteredWord;
+import ua.kiev.sergiosiniy.smsfilter.tables.FilteredWordsTable;
 
 /**
  * Created by SergioSiniy on 09.02.2017.
@@ -85,12 +86,13 @@ public class FilterWordsDialog {
             SQLiteDatabase db=helper.getWritableDatabase();
             if(params[0].equals(INSERT)) {
                 ContentValues wordToFilter = new ContentValues();
-                wordToFilter.put(FilteredWord.WORD, params[1]);
+                wordToFilter.put(FilteredWordsTable.COLUMN_WORD, params[1]);
 
-                db.insert(FilteredWord.TABLE_NAME, null, wordToFilter);
+                db.insert(FilteredWordsTable.TABLE_NAME, null, wordToFilter);
             }
             if(params[0].equals(DELETE)){
-                db.delete(FilteredWord.TABLE_NAME,FilteredWord.WORD,new String[]{params[1]});
+                db.delete(FilteredWordsTable.TABLE_NAME,FilteredWordsTable.COLUMN_WORD,
+                        new String[]{params[1]});
             }
             return null;
         }

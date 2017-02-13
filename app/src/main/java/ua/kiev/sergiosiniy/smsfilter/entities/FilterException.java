@@ -6,11 +6,6 @@ package ua.kiev.sergiosiniy.smsfilter.entities;
 
 public class FilterException {
 
-    public final static String TABLE_NAME = "EXCEPTED_PHONES";
-    public final static String ROW_ID = "_ID";
-    public final static String EXCEPTION_PHONE = "PHONE_NUMBER";
-    public final static String NAME_ID = "NAME_ID";
-
     private int _id;
     private String exceptedPhone;
     private int nameId;
