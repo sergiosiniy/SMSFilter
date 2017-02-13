@@ -47,5 +47,6 @@
     <string name="positive_button_dialog_delete_word">YES</string>
     <string name="negative_button_dialog_delete_word">No</string>
     <string name="toast_delete_word_dialog">Deleted word: </string>
+    <string name="dialog_add_word_already_filtered">This word is already filtered!</string>
 
 </resources>

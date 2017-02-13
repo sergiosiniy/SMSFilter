@@ -108,7 +108,6 @@ public class RecyclerViewFragment extends Fragment {
 
             }
         }
-
     }
 
     private void setFab(int param, FloatingActionButton fab) {
@@ -223,35 +222,50 @@ public class RecyclerViewFragment extends Fragment {
         }
     }
 
-    private class UpdateFilteredWords extends AsyncTask<String, Void, Void> {
+    private class UpdateFilteredWords extends AsyncTask<String, Void, Boolean> {
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected Boolean doInBackground(String... params) {
 
             try {
                 db = helper.getWritableDatabase();
 
-                ContentValues wordToFilter = new ContentValues();
-                wordToFilter.put(FilteredWordsTable.COLUMN_WORD, params[0]);
+                items = db.query(FilteredWordsTable.TABLE_NAME, null, FilteredWordsTable.COLUMN_WORD +
+                        " = ?", new String[]{params[0]}, null, null, null);
 
-                db.insert(FilteredWordsTable.TABLE_NAME, null, wordToFilter);
-                items.close();
-                items = db.query(FilteredWordsTable.TABLE_NAME, null, null, null, null, null, null);
+
+                if (!items.moveToFirst() || items.moveToFirst() && !items.getString(items
+                        .getColumnIndex(FilteredWordsTable.COLUMN_WORD)).equals(params[0])) {
+                    ContentValues wordToFilter = new ContentValues();
+                    wordToFilter.put(FilteredWordsTable.COLUMN_WORD, params[0]);
+
+                    db.insert(FilteredWordsTable.TABLE_NAME, null, wordToFilter);
+                    items.close();
+                    items = db.query(FilteredWordsTable.TABLE_NAME, null, null, null, null, null,
+                            null);
+                    return false;
+                }
+
 
             } catch (SQLiteException e) {
                 e.printStackTrace();
                 Log.e("UpdateFilteredWords:", "Can't get access to the DB!");
             }
 
-            return null;
+            return true;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            FilteredWordsAdapter fwAdapter = (FilteredWordsAdapter) adapter;
-            fwAdapter.setCursor(items);
-            fwAdapter.notifyItemInserted(adapter.getItemCount());
-            fwAdapter.notifyItemRangeChanged(adapter.getItemCount(), adapter.getItemCount());
+        protected void onPostExecute(Boolean isAdded) {
+            if (!isAdded) {
+                FilteredWordsAdapter fwAdapter = (FilteredWordsAdapter) adapter;
+                fwAdapter.setCursor(items);
+                fwAdapter.notifyItemInserted(adapter.getItemCount());
+                fwAdapter.notifyItemRangeChanged(adapter.getItemCount(), adapter.getItemCount());
+            } else {
+                Toast.makeText(context, R.string.dialog_add_word_already_filtered,
+                        Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

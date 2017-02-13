@@ -68,6 +68,8 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
 
                 final String wordToDelete = item.getText().toString();
 
+
+
                 TextView dialogTextView = (TextView) inflateView
                         .findViewById(R.id.textview_delete_word_dialog);
                 dialogTextView.setText(wordToDelete);
