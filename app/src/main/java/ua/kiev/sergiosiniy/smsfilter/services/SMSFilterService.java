@@ -2,7 +2,6 @@ package ua.kiev.sergiosiniy.smsfilter.services;
 
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +16,9 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import ua.kiev.sergiosiniy.smsfilter.tables.ExceptionsTable;
+import ua.kiev.sergiosiniy.smsfilter.tables.FilteredWordsTable;
+import ua.kiev.sergiosiniy.smsfilter.tables.QuarantinedTable;
 import ua.kiev.sergiosiniy.smsfilter.utils.ContactPhonesCheck;
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
 
@@ -28,10 +30,9 @@ public class SMSFilterService extends IntentService {
     public static boolean SERVICE_STATUS = false;
 
     private SMSReceiver messageReceiver;
-    private IntentFilter mIntentFilter;
     private SQLiteDatabase db;
     private SQLiteOpenHelper dbHelper;
-    private ContentResolver contentResolver;
+    private Context context;
 
     public SMSFilterService() {
         super("SMSFilterService");
@@ -41,15 +42,20 @@ public class SMSFilterService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
-        contentResolver = getContentResolver();
 
         //Creates object of SMSReceiver class
         messageReceiver = new SMSReceiver();
-        mIntentFilter = new IntentFilter();
+        IntentFilter mIntentFilter = new IntentFilter();
         mIntentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
 
         //Registering SMS Receiver
         registerReceiver(messageReceiver, mIntentFilter);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            context = getApplicationContext();
+        } else {
+            context = getApplication();
+        }
     }
 
     @Override
@@ -84,10 +90,8 @@ public class SMSFilterService extends IntentService {
             String stringMessageSource;
             String stringMessageBody;
             SmsMessage currentMessage;
-
             dbHelper = new DBHelper(SMSFilterService.this);
             db = dbHelper.getReadableDatabase();
-
             // Here I'm trying to get the message's body and originating address.
             try {
                 if (smsBundle != null) {
@@ -103,24 +107,24 @@ public class SMSFilterService extends IntentService {
 
                         stringMessageSource = currentMessage.getDisplayOriginatingAddress();
                         stringMessageBody = currentMessage.getDisplayMessageBody();
+
                         // When I'm done I push it's phone number and text to the log.
                         Log.i(TAG, "Received message from" + stringMessageSource + ":" +
                                 stringMessageBody);
+
                         // And begin the process of checking of the message for filtered words.
                         new FilteredWordsCheck().execute(stringMessageSource, stringMessageBody);
 
                     }
                 }
             } catch (NullPointerException e) {
-                Log.e("Exception!", "NPE was caught in onReceive() method SMSReceiver class!");
+                Log.e(TAG, "NPE was caught in onReceive() method SMSReceiver class!");
                 e.printStackTrace();
             }
-            dbHelper.close();
-            db.close();
         }
 
         /**
-         * Provides check for filtered words and excepted phones. Makes decision weather SMS
+         * Provides check for filtered words and excepted phones. Decides weather SMS
          * should be delivered or pushed to the quarantine.
          */
         private class FilteredWordsCheck extends AsyncTask<String, Void, Boolean> {
@@ -133,34 +137,34 @@ public class SMSFilterService extends IntentService {
 
                 try {
                     // Get all the filtered words from DB
-                    Cursor filteredWordsCursor = db.query("FILTERED_WORDS",
-                            new String[]{"WORD"},
+                    Cursor filteredWordsCursor = db.query(FilteredWordsTable.TABLE_NAME,
+                            new String[]{FilteredWordsTable.COLUMN_WORD},
                             null, null, null, null, null);
 
                     // Get all the phones from DB
-                    Cursor exceptedNumbersCursor = db.query("PHONES",
-                            new String[]{"PHONE_NUMBER"},
+                    Cursor exceptedNumbersCursor = db.query(ExceptionsTable.TABLE_NAME,
+                            new String[]{ExceptionsTable.COLUMN_PHONES},
                             null, null, null, null, null);
 
-                    if (filteredWordsCursor != null) {
+                    if (filteredWordsCursor != null && filteredWordsCursor.getCount() > 0) {
                         while (filteredWordsCursor.moveToNext()) {
-                            if (message[1].toLowerCase().contains(" " +
-                                    filteredWordsCursor.getString(0).toLowerCase() + " ")) {
+                            if (message[1].toLowerCase().contains(filteredWordsCursor.getString(0)
+                                    .toLowerCase())) {
                                 isPassed = false;
                                 Log.i(TAG, "Message from" + message[0] + ":" + message[1] +
                                         "CONTAINS FILTERED WORD!");
 
                                 // Checks if the phone book contains phone number from a message
                                 ContactPhonesCheck contactPhonesCheck = new ContactPhonesCheck();
-                                isPassed = contactPhonesCheck.checkContacts(getApplicationContext(),
-                                        message[0]);
+                                isPassed = contactPhonesCheck.checkContacts(context, message[0]);
 
-                                if (exceptedNumbersCursor != null && !isPassed) {
+                                if (exceptedNumbersCursor != null && exceptedNumbersCursor
+                                        .getCount() > 0 && !isPassed) {
                                     while (exceptedNumbersCursor.moveToNext()) {
                                         if (exceptedNumbersCursor.getString(0).equals(message[0])) {
                                             isPassed = true;
-                                            Log.i(TAG, "Message from" + message[0] + ":" + message[1] +
-                                                    "CONTAINS EXCEPTED PHONE!");
+                                            Log.i(TAG, "Message from" + message[0] + ":" +
+                                                    message[1] + "CONTAINS EXCEPTED PHONE!");
                                             break;
                                         }
                                     }
@@ -168,26 +172,29 @@ public class SMSFilterService extends IntentService {
                                 }
                             }
                         }
+                        filteredWordsCursor.close();
                     } else {
-                        Log.v(TAG, "No match with word " + filteredWordsCursor.getString(0)
-                                .toUpperCase() + " found.");
 
+                        exceptedNumbersCursor.close();
+                        Log.v(TAG, "No match word found.");
                     }
+
+                    db.close();
 
                     // If message not passed - put it to the quarantined table
                     if (!isPassed) {
                         ContentValues quarantined = new ContentValues();
-                        quarantined.put("PHONE_NUMBER", message[0]);
-                        quarantined.put("MESSAGE", message[1]);
+                        quarantined.put(QuarantinedTable.COLUMN_PHONE, message[0]);
+                        quarantined.put(QuarantinedTable.COLUMN_MESSAGE, message[1]);
                         db = dbHelper.getWritableDatabase();
-                        db.insert("QUARANTINED",
+                        db.insert(QuarantinedTable.TABLE_NAME,
                                 null, quarantined);
                     }
 
-                    filteredWordsCursor.close();
+                    db.close();
                 } catch (SQLiteException e) {
                     e.printStackTrace();
-                    Log.e("SQLiteException", "No access to the DB");
+                    Log.e(TAG, "Can't get access to the DB");
                 }
 
                 return isPassed;

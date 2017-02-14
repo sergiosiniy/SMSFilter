@@ -4,6 +4,7 @@ package ua.kiev.sergiosiniy.smsfilter.activities;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -30,6 +31,7 @@ import ua.kiev.sergiosiniy.smsfilter.tables.ExceptionNamesTable;
 import ua.kiev.sergiosiniy.smsfilter.tables.FilteredWordsTable;
 import ua.kiev.sergiosiniy.smsfilter.tables.QuarantinedTable;
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
+import ua.kiev.sergiosiniy.smsfilter.utils.DatabaseChangedReceiver;
 import ua.kiev.sergiosiniy.smsfilter.utils.ExceptionsAdapter;
 import ua.kiev.sergiosiniy.smsfilter.utils.FilteredWordsAdapter;
 import ua.kiev.sergiosiniy.smsfilter.utils.QuarantinedAdapter;
@@ -41,8 +43,6 @@ public class RecyclerViewFragment extends Fragment {
 
     private Context context;
     public static final String ITEM_ID = "item_id";
-    private final String INSERT = "insert";
-    private final String DELETE = "delete";
     private RecyclerView recyclerView;
     private SQLiteOpenHelper helper;
     private SQLiteDatabase db;
@@ -63,6 +63,8 @@ public class RecyclerViewFragment extends Fragment {
         } else {
             context = getContext();
         }
+
+
     }
 
     @Override
@@ -258,10 +260,7 @@ public class RecyclerViewFragment extends Fragment {
         @Override
         protected void onPostExecute(Boolean isAdded) {
             if (!isAdded) {
-                FilteredWordsAdapter fwAdapter = (FilteredWordsAdapter) adapter;
-                fwAdapter.setCursor(items);
-                fwAdapter.notifyItemInserted(adapter.getItemCount());
-                fwAdapter.notifyItemRangeChanged(adapter.getItemCount(), adapter.getItemCount());
+                context.sendBroadcast(new Intent(DatabaseChangedReceiver.ACTION_ENTITY_INSERTED));
             } else {
                 Toast.makeText(context, R.string.dialog_add_word_already_filtered,
                         Toast.LENGTH_LONG).show();

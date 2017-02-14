@@ -1,8 +1,9 @@
 package ua.kiev.sergiosiniy.smsfilter.utils;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -26,6 +27,7 @@ import ua.kiev.sergiosiniy.smsfilter.tables.FilteredWordsTable;
 
 public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdapter.ViewHolder> {
 
+    private DatabaseChangedReceiver changesReceiver;
     private Cursor filteredWords;
     private Context mContext;
     private int listItemDeletePosition;
@@ -33,6 +35,16 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
     public FilteredWordsAdapter(Context context, Cursor list) {
         this.filteredWords = list;
         this.mContext = context;
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(DatabaseChangedReceiver.ACTION_ENTITY_INSERTED);
+        intentFilter.addAction(DatabaseChangedReceiver.ACTION_ENTITY_DELETED);
+        changesReceiver = new DatabaseChangedReceiver() {
+            @Override
+            public void onReceive(Context receiveContext, Intent intent) {
+               new UpdateCursor().execute(intent);
+            }
+        };
+        context.registerReceiver(changesReceiver, intentFilter);
     }
 
     @Override
@@ -67,7 +79,6 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
                 TextView item = (TextView) holder.itemView.findViewById(R.id.filtered_word);
 
                 final String wordToDelete = item.getText().toString();
-
 
 
                 TextView dialogTextView = (TextView) inflateView
@@ -110,32 +121,26 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
             word = (TextView) itemView.findViewById(R.id.filtered_word);
 
         }
-
     }
 
     private Context getContext() {
         return mContext;
     }
 
-    public void setCursor(Cursor cursor) {
-        this.filteredWords = cursor;
-    }
-
     private class UpdateFilteredWords extends AsyncTask<String, Void, Void> {
+
         SQLiteOpenHelper helper = new DBHelper(mContext);
         SQLiteDatabase db;
 
         @Override
         protected Void doInBackground(String... params) {
+
             db = helper.getWritableDatabase();
             try {
 
                 db.delete(FilteredWordsTable.TABLE_NAME, FilteredWordsTable.COLUMN_WORD +
                         "=\'" + params[0] + "\'", null);
-                filteredWords.close();
-                filteredWords = db.query(FilteredWordsTable.TABLE_NAME, null, null, null, null, null, null);
-
-
+                db.close();
             } catch (SQLiteException e) {
                 e.printStackTrace();
                 Log.e("UpdateFilteredWords:", "Can't get access to the DB!");
@@ -146,13 +151,37 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
 
         @Override
         protected void onPostExecute(Void param) {
-
-            notifyItemRemoved(listItemDeletePosition);
-            notifyItemRangeChanged(listItemDeletePosition, getItemCount());
-
-
-            db.close();
-
+            mContext.sendBroadcast(new Intent(DatabaseChangedReceiver.ACTION_ENTITY_DELETED));
         }
     }
+
+    private class UpdateCursor extends AsyncTask<Intent,Void,Intent>{
+        SQLiteOpenHelper helper = new DBHelper(mContext);
+        SQLiteDatabase db;
+
+        @Override
+        protected Intent doInBackground(Intent... params) {
+
+            db=helper.getReadableDatabase();
+            filteredWords.close();
+            filteredWords=db.query(FilteredWordsTable.TABLE_NAME,null,null,null,null,null,null);
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(Intent intent) {
+            switch (intent.getAction()){
+                case DatabaseChangedReceiver.ACTION_ENTITY_INSERTED:
+                    notifyItemInserted(getItemCount());
+                    notifyItemRangeChanged(getItemCount(),getItemCount());
+                    break;
+                case DatabaseChangedReceiver.ACTION_ENTITY_DELETED:
+                    notifyItemRemoved(listItemDeletePosition);
+                    notifyItemRangeChanged(listItemDeletePosition,getItemCount());
+                    break;
+            }
+            db.close();
+        }
+    }
+
 }

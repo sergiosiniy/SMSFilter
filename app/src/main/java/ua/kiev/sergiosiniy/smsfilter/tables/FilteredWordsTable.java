@@ -14,20 +14,20 @@ public class FilteredWordsTable {
     public static final String COLUMN_ID = "_ID";
     public static final String COLUMN_WORD = "WORD";
 
-    private static final String DATABASE_CREATE = "CREATE TABLE "+TABLE_NAME+"("+
-            COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+
-            COLUMN_WORD+" TEXT" +
+    private static final String DATABASE_CREATE = "CREATE TABLE " + TABLE_NAME + "(" +
+            COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COLUMN_WORD + " TEXT" +
             ")";
 
-    public static void onCreate(SQLiteDatabase db){
+    public static void onCreate(SQLiteDatabase db) {
         db.execSQL(DATABASE_CREATE);
     }
 
-    public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
-        Log.w(FilteredWordsTable.class.getName(),"Upgrading table from version "+oldVersion+" to "+
-                newVersion+", which will destroy all old data");
+    public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.w(FilteredWordsTable.class.getName(), "Upgrading table from version " + oldVersion + " to " +
+                newVersion + ", which will destroy all old data");
 
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
 }
