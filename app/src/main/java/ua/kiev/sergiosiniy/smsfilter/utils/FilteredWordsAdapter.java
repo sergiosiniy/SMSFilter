@@ -27,7 +27,7 @@ import ua.kiev.sergiosiniy.smsfilter.tables.FilteredWordsTable;
 
 public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdapter.ViewHolder> {
 
-    private DatabaseChangedReceiver changesReceiver;
+
     private Cursor filteredWords;
     private Context mContext;
     private int listItemDeletePosition;
@@ -38,7 +38,8 @@ public class FilteredWordsAdapter extends RecyclerView.Adapter<FilteredWordsAdap
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(DatabaseChangedReceiver.ACTION_ENTITY_INSERTED);
         intentFilter.addAction(DatabaseChangedReceiver.ACTION_ENTITY_DELETED);
-        changesReceiver = new DatabaseChangedReceiver() {
+
+        DatabaseChangedReceiver changesReceiver = new DatabaseChangedReceiver() {
             @Override
             public void onReceive(Context receiveContext, Intent intent) {
                new UpdateCursor().execute(intent);

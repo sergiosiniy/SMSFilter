@@ -79,6 +79,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void stopSMSFilterService() {
+        serviceIntent = new Intent(context, SMSFilterService.class);
         context.stopService(serviceIntent);
         SMSFilterService.SERVICE_STATUS = false;
 

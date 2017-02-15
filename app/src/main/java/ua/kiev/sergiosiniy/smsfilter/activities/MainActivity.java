@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private Bundle listType;
     private RecyclerViewFragment recyclerViewFragment;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

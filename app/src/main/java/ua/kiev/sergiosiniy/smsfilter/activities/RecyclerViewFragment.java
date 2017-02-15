@@ -47,7 +47,6 @@ public class RecyclerViewFragment extends Fragment {
     private SQLiteOpenHelper helper;
     private SQLiteDatabase db;
     private Cursor items;
-    private RecyclerView.Adapter adapter;
 
 
     public RecyclerViewFragment() {
@@ -138,7 +137,6 @@ public class RecyclerViewFragment extends Fragment {
         }
     }
 
-
     private void openDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View inflateView = layoutInflater.inflate(R.layout.dialog_add_word_view, null);
@@ -209,18 +207,19 @@ public class RecyclerViewFragment extends Fragment {
         protected void onPostExecute(Integer params) {
             switch (params) {
                 case R.id.navigation_filtered:
-                    recyclerView.setAdapter(adapter = new FilteredWordsAdapter(context,
+                    recyclerView.setAdapter(new FilteredWordsAdapter(context,
                             items));
                     break;
                 case R.id.navigation_quarantined:
-                    recyclerView.setAdapter(adapter = new QuarantinedAdapter(context,
+                    recyclerView.setAdapter(new QuarantinedAdapter(context,
                             items));
                     break;
                 case R.id.navigation_exceptions:
-                    recyclerView.setAdapter(adapter = new ExceptionsAdapter(context,
+                    recyclerView.setAdapter(new ExceptionsAdapter(context,
                             items));
                     break;
             }
+
         }
     }
 
@@ -242,12 +241,8 @@ public class RecyclerViewFragment extends Fragment {
                     wordToFilter.put(FilteredWordsTable.COLUMN_WORD, params[0]);
 
                     db.insert(FilteredWordsTable.TABLE_NAME, null, wordToFilter);
-                    items.close();
-                    items = db.query(FilteredWordsTable.TABLE_NAME, null, null, null, null, null,
-                            null);
                     return false;
                 }
-
 
             } catch (SQLiteException e) {
                 e.printStackTrace();
@@ -259,12 +254,14 @@ public class RecyclerViewFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Boolean isAdded) {
+
             if (!isAdded) {
                 context.sendBroadcast(new Intent(DatabaseChangedReceiver.ACTION_ENTITY_INSERTED));
             } else {
                 Toast.makeText(context, R.string.dialog_add_word_already_filtered,
                         Toast.LENGTH_LONG).show();
             }
+            db.close();
         }
     }
 }

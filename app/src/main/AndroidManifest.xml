@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
@@ -23,12 +24,14 @@
 
         <service
             android:name=".services.SMSFilterService"
+            android:exported="true"
             android:enabled="true"
-            android:exported="false">
+            android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name=".services.SMSFilterService" />
             </intent-filter>
         </service>
+        
 
         <activity android:name=".activities.QuarantinedMessageDetails"
             android:label="@string/quarantined_messages"/>

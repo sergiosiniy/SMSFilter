@@ -1,6 +1,7 @@
 package ua.kiev.sergiosiniy.smsfilter.services;
 
-import android.app.IntentService;
+
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -13,6 +14,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.provider.Telephony;
+import android.speech.tts.TextToSpeech;
+import android.support.annotation.Nullable;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
@@ -21,12 +26,13 @@ import ua.kiev.sergiosiniy.smsfilter.tables.FilteredWordsTable;
 import ua.kiev.sergiosiniy.smsfilter.tables.QuarantinedTable;
 import ua.kiev.sergiosiniy.smsfilter.utils.ContactPhonesCheck;
 import ua.kiev.sergiosiniy.smsfilter.utils.DBHelper;
+import ua.kiev.sergiosiniy.smsfilter.utils.DatabaseChangedReceiver;
 
 /**
  * Created by SergioSiniy on 25.01.2017.
  */
 
-public class SMSFilterService extends IntentService {
+public class SMSFilterService extends Service {
     public static boolean SERVICE_STATUS = false;
 
     private SMSReceiver messageReceiver;
@@ -34,41 +40,47 @@ public class SMSFilterService extends IntentService {
     private SQLiteOpenHelper dbHelper;
     private Context context;
 
-    public SMSFilterService() {
-        super("SMSFilterService");
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
 
-
-        //Creates object of SMSReceiver class
-        messageReceiver = new SMSReceiver();
+        messageReceiver = new SMSReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(SMSReceiver.ACTION_SMS_RECEIVED))
+                    Log.i(this.getClass().getCanonicalName(), "SMS RECEIVED! Yapie!");
+            }
+        };
         IntentFilter mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        mIntentFilter.addAction(SMSReceiver.ACTION_SMS_RECEIVED);
 
-        //Registering SMS Receiver
+
+        //Registering SMS Receivers
         registerReceiver(messageReceiver, mIntentFilter);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            context = getApplicationContext();
-        } else {
-            context = getApplication();
-        }
+        context = getApplicationContext();
+
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return Service.START_STICKY;
     }
 
 
     @Override
     public void onDestroy() {
         unregisterReceiver(messageReceiver);
+        Log.i("Service OnDestroy", "Service destroyed");
         super.onDestroy();
     }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
 
     /**
      * SMSReceiver class, which waiting for SMS receiving and provides
@@ -79,47 +91,55 @@ public class SMSFilterService extends IntentService {
      */
     private class SMSReceiver extends BroadcastReceiver {
 
+        public static final String ACTION_SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+
         // Tag with a current class name for android logging
         private final String TAG = this.getClass().getSimpleName();
+
 
         @SuppressWarnings("deprecation")
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            final Bundle smsBundle = intent.getExtras();
-            String stringMessageSource;
-            String stringMessageBody;
-            SmsMessage currentMessage;
-            dbHelper = new DBHelper(SMSFilterService.this);
-            db = dbHelper.getReadableDatabase();
-            // Here I'm trying to get the message's body and originating address.
-            try {
-                if (smsBundle != null) {
-                    final Object[] pduObjects = (Object[]) smsBundle.get("pdus");
+            if (intent.getAction().compareToIgnoreCase(ACTION_SMS_RECEIVED) == 0) {
 
-                    for (Object pdu : pduObjects) {
+                Log.i(this.getClass().getCanonicalName(), "SMS RECEIVED! Yapie!");
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            currentMessage = SmsMessage.createFromPdu((byte[]) pdu, "3gpp");
-                        } else {
-                            currentMessage = SmsMessage.createFromPdu((byte[]) pdu);
+                final Bundle smsBundle = intent.getExtras();
+                String stringMessageSource;
+                String stringMessageBody;
+                SmsMessage currentMessage;
+                dbHelper = new DBHelper(SMSFilterService.this);
+                db = dbHelper.getReadableDatabase();
+                // Here I'm trying to get the message's body and originating address.
+                try {
+                    if (smsBundle != null) {
+                        final Object[] pduObjects = (Object[]) intent.getExtras().get("pdus");
+
+                        for (Object pdu : pduObjects) {
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                currentMessage = SmsMessage.createFromPdu((byte[]) pdu, "3gpp");
+                            } else {
+                                currentMessage = SmsMessage.createFromPdu((byte[]) pdu);
+                            }
+
+                            stringMessageSource = currentMessage.getDisplayOriginatingAddress();
+                            stringMessageBody = currentMessage.getDisplayMessageBody();
+
+                            // When I'm done I push it's phone number and text to the log.
+                            Log.i(TAG, "Received message from" + stringMessageSource + ":" +
+                                    stringMessageBody);
+
+                            // And begin the process of checking of the message for filtered words.
+                            new FilteredWordsCheck().execute(stringMessageSource, stringMessageBody);
+
                         }
-
-                        stringMessageSource = currentMessage.getDisplayOriginatingAddress();
-                        stringMessageBody = currentMessage.getDisplayMessageBody();
-
-                        // When I'm done I push it's phone number and text to the log.
-                        Log.i(TAG, "Received message from" + stringMessageSource + ":" +
-                                stringMessageBody);
-
-                        // And begin the process of checking of the message for filtered words.
-                        new FilteredWordsCheck().execute(stringMessageSource, stringMessageBody);
-
                     }
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "NPE was caught in onReceive() method SMSReceiver class!");
+                    e.printStackTrace();
                 }
-            } catch (NullPointerException e) {
-                Log.e(TAG, "NPE was caught in onReceive() method SMSReceiver class!");
-                e.printStackTrace();
             }
         }
 
@@ -156,7 +176,8 @@ public class SMSFilterService extends IntentService {
 
                                 // Checks if the phone book contains phone number from a message
                                 ContactPhonesCheck contactPhonesCheck = new ContactPhonesCheck();
-                                isPassed = contactPhonesCheck.checkContacts(context, message[0]);
+                                isPassed = contactPhonesCheck.checkContacts(context,
+                                        message[0]);
 
                                 if (exceptedNumbersCursor != null && exceptedNumbersCursor
                                         .getCount() > 0 && !isPassed) {
@@ -189,6 +210,8 @@ public class SMSFilterService extends IntentService {
                         db = dbHelper.getWritableDatabase();
                         db.insert(QuarantinedTable.TABLE_NAME,
                                 null, quarantined);
+                        context.sendBroadcast(new Intent(DatabaseChangedReceiver
+                                .ACTION_ENTITY_INSERTED));
                     }
 
                     db.close();
